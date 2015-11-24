@@ -1,0 +1,26 @@
+<?php
+
+// Define the block that displays the module
+function doi_display_block_info() {
+  $blocks['doi_display'] = array(
+    'info' => t('DOI Display'),
+  );
+  return $blocks;
+}
+
+// Define what is displayed in the module
+function doi_display_block_view($delta='') {
+  switch ($delta) {
+  case 'doi_display':
+      $doi = doi_display_get_content();
+      $block['subject'] = t("DOI ");
+      $block['content'] = t("HELLO!");
+      return $block;
+      break;
+  }
+}
+
+// The subroutine that creates the actual display
+function doi_display_get_content() {
+    return "TEST";
+}

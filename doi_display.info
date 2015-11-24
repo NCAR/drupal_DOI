@@ -1,0 +1,6 @@
+name = DOI Display
+description = "This module displays DOI metadata from EZID as a block."
+package = EOL
+core = 7.x
+
+files[] = doi_display.module
