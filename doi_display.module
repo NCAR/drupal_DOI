@@ -13,8 +13,8 @@ function doi_display_block_view($delta='') {
   switch ($delta) {
   case 'doi_display':
       $doi = doi_display_get_content();
-      $block['subject'] = t("DOI ");
-      $block['content'] = t("HELLO EZID!");
+      $block['subject'] = t("Citation");
+      $block['content'] = $doi;
       return $block;
       break;
   }
@@ -22,5 +22,9 @@ function doi_display_block_view($delta='') {
 
 // The subroutine that creates the actual display
 function doi_display_get_content() {
-    return "TEST";
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, 'http://ezid.cdlib.org/id/doi:10.5065/D6DR2SJP');
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $output = curl_exec($ch);
+    return $output;
 }
