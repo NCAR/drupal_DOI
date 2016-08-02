@@ -26,18 +26,32 @@ function doi_display_get_content() {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, 'http://ezid.cdlib.org/id/doi:10.5065/D6DR2SJP');
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: xml; charset=UTF-8', 'Content-Length: ' . strlen($input)));
     $output = curl_exec($ch);
     //return $output;
 
     // Output is returned as a single string containing XML which needs to 
     // be parsed to get to the metadata fields. I did a wget on the url 
     // above to see what is returned to $output
-    $xml1 = explode("datacite:",$output);
-    $xml2 = explode("_created:",$xml1[1]);
+    //$xml1 = explode("datacite:",$output);
+    //$xml2 = explode("_created:",$xml1[1]);
 
     // At this point, $xml2[0] contains the xml table from the ezid page. 
-    // Look into options for parsing XML into an array object.
-    //$xml = simplexml_load_string($xml1[1]);
-    //$citation = $xml['title'];
-    return $xml2[0];
+    // What we really want is to use the EZID API to get back the metadata
+    //
+    //return $xml2[0];
+
+    $xml = explode("%0A" , $output);
+    $identifier = $xml[2];
+    $creators = $xml[5];
+    $publisher = $xml[11];
+    $publication_year = $xml[12];
+    $resource_type = $xml[13];
+    $abstract = $xml[15];
+    $contributors = array($xml[19], $xml[22]);
+    $dates = $xml[26];
+    $rights = $xml[29];
+    $geolocations = $xml[33];
+
+    return "EZID output: " . $output;
 }
