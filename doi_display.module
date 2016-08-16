@@ -23,35 +23,56 @@ function doi_display_block_view($delta='') {
 // The subroutine that creates the actual display
 // 29 = 9 + length of identifier (including doi:)
 function doi_display_get_content() {
+    
+    $doi = "doi:10.5065/D6DR2SJP";
+    $url = "http://ezid.cdlib.org/manage/display_xml/";
+    $full_url = $url . $doi;   
+
     $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, 'http://ezid.cdlib.org/id/doi:10.5065/D6DR2SJP');
+    curl_setopt($ch, CURLOPT_URL, $full_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: xml; charset=UTF-8', 'Content-Length: ' . strlen($input)));
     $output = curl_exec($ch);
+    curl_close($ch);
+
+
+// Separate the xml in $output into objects that PHP can grab
+    $xmlobj = simplexml_load_string($output);
+ 
+// Create variables for each of the metadata items
+    $identifier = $xmlobj->identifier;
+    $creator = $xmlobj->creators->creator->creatorName;
+    $title = $xmlobj->titles->title;
+    $publisher = $xmlobj->publisher;
+    $description = $xmlobj->descriptions->description;
+    $contributors = $xmlobj->contributors;
+    $dates = $xmlobj->dates->date;
+    $rights = $xmlobj->rightsList->rights;
+    $location = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
+ 
+// Create the citation text that will be displayed in the block
+    $citation = ("When referencing the " . $title . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $creator . ", " . $dates . ", " . $title . ". <a style='color:#297AC9' href='http://dx.doi.org/". $identifier . "'> http://dx.doi.org/" . $identifier . "</a></blockquote> or as a footnote:<blockquote> " . $creator . ", " . $title . ", <a style='color:#297AC9' href='http://dx.doi.org/" . $identifier . "'> http://dx.doi.org/" . $identifier . "</a></blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $identifier . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.");
+
+    return $citation;
     //return $output;
 
     // Output is returned as a single string containing XML which needs to 
     // be parsed to get to the metadata fields. I did a wget on the url 
     // above to see what is returned to $output
-    //$xml1 = explode("datacite:",$output);
-    //$xml2 = explode("_created:",$xml1[1]);
+//    $xml1 = explode("datacite:",$output);
+//    $xml2 = explode("_created:",$xml1[1]);
 
     // At this point, $xml2[0] contains the xml table from the ezid page. 
     // What we really want is to use the EZID API to get back the metadata
     //
-    //return $xml2[0];
+//    return $xml2[0];
 
-    $xml = explode("%0A" , $output);
-    $identifier = $xml[2];
-    $creators = $xml[5];
-    $publisher = $xml[11];
-    $publication_year = $xml[12];
-    $resource_type = $xml[13];
-    $abstract = $xml[15];
-    $contributors = array($xml[19], $xml[22]);
-    $dates = $xml[26];
-    $rights = $xml[29];
-    $geolocations = $xml[33];
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, "http://doi.org/10.5065/D6DR2SJP");
+    curl_setopt($ch, CURLOPT_HTTPHEADER,
+	  array("Accept: text/x-bibliography; style=american-geophysical-union http://doi.org/10.5065/D6DR2SJP"));
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $output = curl_exec($ch);
+    curl_close($ch);
 
-    return "EZID output: " . $output;
+    //return $output;
 }
