@@ -24,7 +24,23 @@ function doi_display_block_view($delta='') {
 // 29 = 9 + length of identifier (including doi:)
 function doi_display_get_content() {
     
-    $doi = "doi:10.5065/D6DR2SJP";
+    //$nid = 9763;
+    //$node = node_load($nid);
+    
+    if(arg(0) == 'node' && is_numeric(arg(1))) {
+        // Grab node id of current node
+        $current_nid = arg(1);
+       
+        // Load current node to grab fields
+        $current_node = node_load($current_nid);
+    }
+
+    // Get node id of content type containing the doi
+    $nid = $current_node->field_doi_reference[und][0][target_id];
+    $node = node_load($nid); 
+    
+    // Grab the value in the title of the doi content type which contains the doi
+    $doi = $node->title;
     $url = "http://ezid.cdlib.org/manage/display_xml/";
     $full_url = $url . $doi;   
 
@@ -51,7 +67,7 @@ function doi_display_get_content() {
  
 
 // Pull the full citation from the doi.org webiste
-    $url = "http://doi.org/10.5065/D6DR2SJP";
+    $url = "http://doi.org/" . $identifier;
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
