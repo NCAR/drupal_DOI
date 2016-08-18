@@ -57,10 +57,10 @@ function doi_display_get_content() {
     curl_close($ch);
 
 
-// Separate the xml in $output into objects that PHP can grab
+    // Separate the xml in $output into objects that PHP can grab
     $xmlobj = simplexml_load_string($xml);
  
-// Create variables for each of the metadata items
+    // Create variables for each of the metadata items
     $node->field_doi_identifier[und][0][value] = $xmlobj->identifier;
     $node->field_doi_creator[und][0][value] = $xmlobj->creators->creator->creatorName;
     $node->field_doi_title[und][0][value] = $xmlobj->titles->title;
@@ -72,7 +72,7 @@ function doi_display_get_content() {
     $node->field_doi_location[und][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
  
 
-// Pull the full citation from the doi.org webiste
+    // Pull the full citation from the doi.org webiste
     $url = "http://doi.org/" . $node->field_doi_identifier[und][0][value];
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -86,18 +86,28 @@ function doi_display_get_content() {
     if(!curl_errno($ch)) {
         $info = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if($info >= 500 && $info < 600) {
-            return "DataCite is experiencing problems and we cannot display a citation. Please check back later.";
+            $citation = "DataCite is experiencing problems and we cannot display a citation. Please check back later.";
         }
         else if($info >= 400 && $info < 500) {
-            return "The DOI entered for this node does not exist on DataCite.";
+            $citation = "The DOI entered for this node does not exist on DataCite.";
         }
     }
 
     curl_close($ch);
 
-// Create the citation text that will be displayed in the block
-    $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][vlaue] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.");
+    // Output text from module to be displayed in the block
+    $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][vlaue] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
 
+    // Add additional First Use paper info if publication is linked
+    if($node->field_first_use_paper[und][0][target_id] != NULL){
+        $additional = "Additionally, please cite the First Use paper associated with this Facility/Instrument: <List contents of first_use_paper field here>";
+        $fup_nid = $node->field_first_use_paper[und][0][target_id];
+        $fup_node = node_load($fup_nid);
+        $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation[und][0][value] . "</blockquote>");
+    }
+
+
+    // Save metadata to DOI content fields    
     node_save($node);
 
     return $output;
