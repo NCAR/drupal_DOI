@@ -21,11 +21,7 @@ function doi_display_block_view($delta='') {
 }
 
 // The subroutine that creates the actual display
-// 29 = 9 + length of identifier (including doi:)
 function doi_display_get_content() {
-    
-    //$nid = 9763;
-    //$node = node_load($nid);
     
     if(arg(0) == 'node' && is_numeric(arg(1))) {
         // Grab node id of current node
@@ -36,7 +32,17 @@ function doi_display_get_content() {
     }
 
     // Get node id of content type containing the doi
-    $nid = $current_node->field_doi_reference[und][0][target_id];
+    
+    if($current_node->type == observing_facility){
+
+        $nid = $current_node->field_doi_reference[und][0][target_id];
+    }
+
+    else if($current_node->type == instrument){
+    
+        $nid = $current_node->field_i_doi_reference[und][0][target_id];
+    }
+
     $node = node_load($nid); 
     
     // Grab the value in the title of the doi content type which contains the doi
@@ -55,30 +61,44 @@ function doi_display_get_content() {
     $xmlobj = simplexml_load_string($xml);
  
 // Create variables for each of the metadata items
-    $identifier = $xmlobj->identifier;
-    $creator = $xmlobj->creators->creator->creatorName;
-    $title = $xmlobj->titles->title;
-    $publisher = $xmlobj->publisher;
-    $description = $xmlobj->descriptions->description;
-    $contributors = $xmlobj->contributors;
-    $dates = $xmlobj->dates->date;
-    $rights = $xmlobj->rightsList->rights;
-    $location = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
+    $node->field_doi_identifier[und][0][value] = $xmlobj->identifier;
+    $node->field_doi_creator[und][0][value] = $xmlobj->creators->creator->creatorName;
+    $node->field_doi_title[und][0][value] = $xmlobj->titles->title;
+    $node->field_doi_publisher[und][0][value] = $xmlobj->publisher;
+    $node->field_doi_description[und][0][value] = $xmlobj->descriptions->description;
+    $node->field_doi_contributors[und][0][value] = $xmlobj->contributors->contributor->contributorName;
+    $node->field_doi_dates[und][0][value] = $xmlobj->dates->date;
+    $node->field_doi_rights[und][0][value] = $xmlobj->rightsList->rights;
+    $node->field_doi_location[und][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
  
 
 // Pull the full citation from the doi.org webiste
-    $url = "http://doi.org/" . $identifier;
+    $url = "http://doi.org/" . $node->field_doi_identifier[und][0][value];
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-    $citation_style = "american-geophysical-union";
+    $citation_style = "american-meteorological-society";
     $headers = array("Accept: text/x-bibliography; style=" . $citation_style);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $citation = curl_exec($ch);
+    
+    // Catch errors returned from DataCite and retun messages corresponding to HTTP Codes
+    if(!curl_errno($ch)) {
+        $info = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if($info >= 500 && $info < 600) {
+            return "DataCite is experiencing problems and we cannot display a citation. Please check back later.";
+        }
+        else if($info >= 400 && $info < 500) {
+            return "The DOI entered for this node does not exist on DataCite.";
+        }
+    }
+
     curl_close($ch);
 
 // Create the citation text that will be displayed in the block
-    $output = ("When referencing the " . $title . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "<br> <a style='color:#297AC9' href='http://dx.doi.org/". $identifier . "'> http://dx.doi.org/" . $identifier . "</a></blockquote> or as a footnote:<blockquote> " . $creator . ", " . $title . ", <br> <a style='color:#297AC9' href='http://dx.doi.org/" . $identifier . "'> http://dx.doi.org/" . $identifier . "</a></blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $identifier . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.");
+    $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][vlaue] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.");
+
+    node_save($node);
 
     return $output;
 }
