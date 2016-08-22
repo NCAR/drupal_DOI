@@ -66,7 +66,14 @@ function doi_display_get_content() {
     $node->field_doi_title[und][0][value] = $xmlobj->titles->title;
     $node->field_doi_publisher[und][0][value] = $xmlobj->publisher;
     $node->field_doi_description[und][0][value] = $xmlobj->descriptions->description;
-    $node->field_doi_contributors[und][0][value] = $xmlobj->contributors->contributor->contributorName;
+    
+    // For loop to add all contributors to the contributors field
+    $contributors_field = '';
+    foreach($xmlobj->contributors->contributor as $contributor) {
+        $contributors_field = $contributors_field . $contributor->contributorName . ", ";
+    }
+    $node->field_doi_contributors[und][0][value] = $contributors_field;
+
     $node->field_doi_dates[und][0][value] = $xmlobj->dates->date;
     $node->field_doi_rights[und][0][value] = $xmlobj->rightsList->rights;
     $node->field_doi_location[und][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
@@ -93,8 +100,11 @@ function doi_display_get_content() {
         }
     }
 
-    curl_close($ch);
 
+    curl_close($ch);
+    
+    drupal_set_message($node->field_doi_identifier[und][0][value]);
+  
     // Output text from module to be displayed in the block
     $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][vlaue] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
 
