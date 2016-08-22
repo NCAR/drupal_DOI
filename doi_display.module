@@ -70,7 +70,7 @@ function doi_display_get_content() {
     // For loop to add all contributors to the contributors field
     $contributors_field = '';
     foreach($xmlobj->contributors->contributor as $contributor) {
-        $contributors_field = $contributors_field . $contributor->contributorName . ", ";
+        $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
     }
     $node->field_doi_contributors[und][0][value] = $contributors_field;
 
@@ -80,7 +80,7 @@ function doi_display_get_content() {
  
 
     // Pull the full citation from the doi.org webiste
-    $url = "http://doi.org/" . $node->field_doi_identifier[und][0][value];
+    $url = "http://data.datacite.org/" . $node->field_doi_identifier[und][0][value];
     $ch = curl_init($url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
@@ -88,7 +88,6 @@ function doi_display_get_content() {
     $headers = array("Accept: text/x-bibliography; style=" . $citation_style);
     curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
     $citation = curl_exec($ch);
-    
     // Catch errors returned from DataCite and retun messages corresponding to HTTP Codes
     if(!curl_errno($ch)) {
         $info = curl_getinfo($ch, CURLINFO_HTTP_CODE);
@@ -96,7 +95,7 @@ function doi_display_get_content() {
             $citation = "DataCite is experiencing problems and we cannot display a citation. Please check back later.";
         }
         else if($info >= 400 && $info < 500) {
-            $citation = "The DOI entered for this node does not exist on DataCite.";
+            $citation = "There is an error with the requested DOI, Datacite returned error: <strong>" . $info . "</strong>";
         }
     }
 
