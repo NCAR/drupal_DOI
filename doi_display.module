@@ -95,7 +95,7 @@ function doi_display_get_content() {
             $citation = "DataCite is experiencing problems and we cannot display a citation. Please check back later.";
         }
         else if($info >= 400 && $info < 500) {
-            $citation = "There is an error with the requested DOI, Datacite returned error: <strong>" . $info . "</strong>";
+            $citation = "Error: <strong>" . $info . "</strong>. The DOI entered for this node does not exist on DataCite.";
         }
     }
 
