@@ -1,4 +1,15 @@
 <?php
+// Custom module to display a citation on a node given a DOI for that node.
+// Contains the following functions which might be of use to other modules.
+//    _query_datacite($doi,$accept) - given a doi and an Accept string which 
+//          defines a format, query datacite and return metadata in the requested
+//          format.
+//    _get_json_element_from_doi($element,$doi) - given a doi and the name of an 
+//          element in the JSON metadata, return that element.
+//     _get_full_citation_from_doi($doi)
+// function _get_xmlobj($doi) {
+// function _get_year_from_doi($doi) {
+// function _get_title_from_doi($doi) {
 
 // Define the block that displays the module
 function doi_display_block_info() {
@@ -20,8 +31,125 @@ function doi_display_block_view($delta='') {
   }
 }
 
+//Query datacite and return metadata for this DOI based on type given in accept 
+//command
+function _query_datacite($doi,$accept) {
+    // Sort out if being passed the full datacite path and DOI, or just the DOI
+    if (preg_match('/http/i', $doi)) {
+        $url = $doi;
+    } else {
+        $url = "http://data.datacite.org/" . $doi;
+    }	
+    
+    // Query datacite and return the metadata based on $accept option. 
+    // Store in $result 
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
+    $headers = array($accept);
+    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+    $result = curl_exec($ch);
+
+    // Catch errors returned from DataCite and retun messages corresponding to 
+    // HTTP Codes
+    if(!curl_errno($ch)) {
+        $info = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        if($info >= 500 && $info < 600) {
+	    $result = "DataCite is experiencing problems and we cannot display 
+		a citation. Please check back later.";
+        }
+        else if($info >= 400 && $info < 500) {
+	    $result = "Error: <strong>" . $info . "</strong>. The DOI entered 
+		for this node does not exist on DataCite.";
+	}
+    }
+    curl_close($ch);
+
+    // Filter out bad responses from dx.doi.org. A handful of DOIs 
+    // that returned HTML instead of the expected response - this is a 
+    // catch-all to detect that bad response. Not sure if we will get these 
+    // using data.datacite.org, but leave it just in case.
+    if (preg_match('/DOCTYPE/', $result)) {
+        $result = "";
+    } else if (preg_match('/html/', $result)) {
+	$result = "";
+    }
+
+    // Convert to ascii to remove weird UTF-8 Characters
+    $result = iconv('UTF-8', 'ASCII//TRANSLIT', $result);
+
+    return($result);
+
+}
+
+function _get_json_element_from_doi($element,$doi) {
+
+    $accept = "Accept: application/rdf+xml;q=0.5, application/vnd.citationstyles.csl+json;q=1.0";
+    $result=_query_datacite($doi,$accept);
+
+    // Extract the element of interest from the JSON
+    if (preg_match('',$result)) {
+	$value = "";
+    } else {
+       $json = json_decode($result);
+       $value = $json->$element;
+    }
+
+    return($value);
+}
+
+// Pull the full citation from the doi.org website
+function _get_full_citation_from_doi($doi) {
+    // Set the citation style. There are many choices. Set your preference 
+    // here.
+    $citation_style = "apa";
+    $accept = "Accept: text/x-bibliography; style=" . $citation_style;
+
+    $citation = _query_datacite($doi,$accept);
+
+    // Add access date to citation
+    $citation = $citation."Retrieved ".date("F j, Y");
+
+    return($citation);
+}
+
+function _get_xmlobj($doi) {
+    #Query EZID for the XML for this DOI
+    $url = "http://ezid.cdlib.org/manage/display_xml/";
+    $full_url = $url . $doi;   
+
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $full_url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    $xml = curl_exec($ch);
+    curl_close($ch);
+
+    // Separate the xml into objects that PHP can grab
+    $xmlobj = simplexml_load_string($xml);
+
+    // Return the objects
+    return $xmlobj;
+}
+
+function _get_year_from_doi($doi) {
+    $xmlobj = _get_xmlobj($doi);
+    return($xmlobj->dates->date);
+}
+function _get_title_from_doi($doi) {
+    $xmlobj = _get_xmlobj($doi);
+    return($xmlobj->identifier);
+}
+
 // The subroutine that creates the actual display
 function doi_display_get_content() {
+    // NOTE: This requires the existence of a DOI content type with the 
+    // following variables: title, field_first_use_paper, field_doi_identifier, 
+    // field_doi_creator,field_doi_title, field_doi_publisher, 
+    // field_doi_description, field_doi_contributors, field_doi_dates, 
+    // field_doi_rights, field_doi_location, and a page content type containing 
+    // an entity reference to the DOI.
+    // Look into packaging this as a feature module so everything will be 
+    // together.
     
     if(arg(0) == 'node' && is_numeric(arg(1))) {
         // Grab node id of current node
@@ -32,33 +160,20 @@ function doi_display_get_content() {
     }
 
     // Get node id of content type containing the doi
-    
     if($current_node->type == observing_facility){
-
         $nid = $current_node->field_doi_reference[und][0][target_id];
     }
-
     else if($current_node->type == instrument){
-    
         $nid = $current_node->field_i_doi_reference[und][0][target_id];
     }
 
     $node = node_load($nid); 
     
     // Grab the value in the title of the doi content type which contains the doi
+    // Note that JSON doesn't return all the metadata we want so use the XML 
+    // query
     $doi = $node->title;
-    $url = "http://ezid.cdlib.org/manage/display_xml/";
-    $full_url = $url . $doi;   
-
-    $ch = curl_init();
-    curl_setopt($ch, CURLOPT_URL, $full_url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    $xml = curl_exec($ch);
-    curl_close($ch);
-
-
-    // Separate the xml in $output into objects that PHP can grab
-    $xmlobj = simplexml_load_string($xml);
+    $xmlobj = _get_xmlobj($doi);
  
     // Create variables for each of the metadata items
     $node->field_doi_identifier[und][0][value] = $xmlobj->identifier;
@@ -66,7 +181,7 @@ function doi_display_get_content() {
     $node->field_doi_title[und][0][value] = $xmlobj->titles->title;
     $node->field_doi_publisher[und][0][value] = $xmlobj->publisher;
     $node->field_doi_description[und][0][value] = $xmlobj->descriptions->description;
-    
+
     // For loop to add all contributors to the contributors field
     $contributors_field = '';
     foreach($xmlobj->contributors->contributor as $contributor) {
@@ -78,32 +193,10 @@ function doi_display_get_content() {
     $node->field_doi_rights[und][0][value] = $xmlobj->rightsList->rights;
     $node->field_doi_location[und][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
  
+    $citation = _get_full_citation_from_doi($node->field_doi_identifier[und][0][value]);
 
-    // Pull the full citation from the doi.org webiste
-    $url = "http://data.datacite.org/" . $node->field_doi_identifier[und][0][value];
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, 1);
-    $citation_style = "american-meteorological-society";
-    $headers = array("Accept: text/x-bibliography; style=" . $citation_style);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    $citation = curl_exec($ch);
-    // Catch errors returned from DataCite and retun messages corresponding to HTTP Codes
-    if(!curl_errno($ch)) {
-        $info = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        if($info >= 500 && $info < 600) {
-            $citation = "DataCite is experiencing problems and we cannot display a citation. Please check back later.";
-        }
-        else if($info >= 400 && $info < 500) {
-            $citation = "Error: <strong>" . $info . "</strong>. The DOI entered for this node does not exist on DataCite.";
-        }
-    }
-
-
-    curl_close($ch);
-    
     // Output text from module to be displayed in the block
-    $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][vlaue] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
+    $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
 
     // Add additional First Use paper info if publication is linked
     if($node->field_first_use_paper[und][0][target_id] != NULL){
