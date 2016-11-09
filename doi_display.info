@@ -4,3 +4,6 @@ package = EOL
 core = 7.x
 
 files[] = doi_display.module
+
+dependencies[] = date
+dependencies[] = entityreference
