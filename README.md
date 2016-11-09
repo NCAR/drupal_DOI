@@ -3,15 +3,12 @@ Creation of a Drupal Module to display and manage DOI metadata within a Drupal w
 To test this module:
 
   * In your Drupal instance, go to sites/all/modules/custom
-
-  * create a subdir doi_display
-
-  * Download the module files (.info, .modules) into this dir
-
-  * Enable module under Modules - may need to clear cache
-
-  * Configure module under Structure -> blocks
-
-  * View module on your site based on your configuration.
-
-(disable module while coding, reenable to test)
+  * Download or clone this repository
+  * Rename folder from drupal_DOI to doi_display
+  * Enable module under Modules (may need to clear cache)
+  * Add a DOI content type (see doi_display.module for field definitions)
+  * Add a DOI entityreference field (field_doi_reference) to the content type you'd like to display citations on (eg. Basic Page)
+  * Enable "DOI Display" block under Structure -> Blocks
+  * Edit "DOI Display" block visibility criteria to match your content type
+  * Add a new DOI node and edit your content node to reference the new DOI
+  * View your content node: the "Citation" block should appear
