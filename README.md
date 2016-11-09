@@ -10,5 +10,6 @@ To test this module:
   * Add a DOI entityreference field (field_doi_reference) to the content type you'd like to display citations on (eg. Basic Page)
   * Enable "DOI Display" block under Structure -> Blocks
   * Edit "DOI Display" block visibility criteria to match your content type
-  * Add a new DOI node and edit your content node to reference the new DOI
+  * Add a new DOI node, setting the title to the DOI itself
+  * Edit your content node to reference the new DOI
   * View your content node: the "Citation" block should appear
