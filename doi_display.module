@@ -4,8 +4,6 @@
 //    _query_datacite($doi,$accept) - given a doi and an Accept string which 
 //          defines a format, query datacite and return metadata in the requested
 //          format.
-//    _get_json_element_from_doi($element,$doi) - given a doi and the name of an 
-//          element in the JSON metadata, return that element.
 //     _get_full_citation_from_doi($doi)
 // function _get_xmlobj($doi) {
 
@@ -80,21 +78,6 @@ function _query_datacite($doi,$accept) {
 
 }
 
-function _get_json_element_from_doi($element,$doi) {
-
-    $accept = "Accept: application/rdf+xml;q=0.5, application/vnd.citationstyles.csl+json;q=1.0";
-    $result=_query_datacite($doi,$accept);
-
-    // Extract the element of interest from the JSON
-    if (preg_match('',$result)) {
-	$value = "";
-    } else {
-       $json = json_decode($result);
-       $value = $json->$element;
-    }
-
-    return($value);
-}
 
 // Pull the full citation from the doi.org website
 function _get_full_citation_from_doi($doi) {
