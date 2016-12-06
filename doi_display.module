@@ -1,11 +1,11 @@
 <?php
 // Custom module to display a citation on a node given a DOI for that node.
 // Contains the following functions which might be of use to other modules.
-//    _query_datacite($doi,$accept) - given a doi and an Accept string which 
+//    _doi_display_query_datacite($doi,$accept) - given a doi and an Accept string which 
 //          defines a format, query datacite and return metadata in the requested
 //          format.
-//     _get_full_citation_from_doi($doi)
-// function _get_xmlobj($doi) {
+//     _doi_display_get_full_citation_from_doi($doi)
+// function _doi_display_get_xmlobj($doi) {
 
 // Define the block that displays the module
 function doi_display_block_info() {
@@ -29,7 +29,7 @@ function doi_display_block_view($delta='') {
 
 //Query datacite and return metadata for this DOI based on type given in accept 
 //command
-function _query_datacite($doi,$accept) {
+function _doi_display_query_datacite($doi,$accept) {
     // Sort out if being passed the full datacite path and DOI, or just the DOI
     if (preg_match('/http/i', $doi)) {
         $url = $doi;
@@ -80,13 +80,13 @@ function _query_datacite($doi,$accept) {
 
 
 // Pull the full citation from the doi.org website
-function _get_full_citation_from_doi($doi) {
+function _doi_display_get_full_citation_from_doi($doi) {
     // Set the citation style. There are many choices. Set your preference 
     // here.
     $citation_style = "apa";
     $accept = "Accept: text/x-bibliography; style=" . $citation_style;
 
-    $citation = _query_datacite($doi,$accept);
+    $citation = _doi_display_query_datacite($doi,$accept);
 
     // Add access date to citation
     $citation = $citation."Retrieved ".date("F j, Y");
@@ -94,7 +94,7 @@ function _get_full_citation_from_doi($doi) {
     return($citation);
 }
 
-function _get_xmlobj($doi) {
+function _doi_display_get_xmlobj($doi) {
     #Query EZID for the XML for this DOI
     $url = "http://ezid.cdlib.org/manage/display_xml/";
     $full_url = $url . $doi;   
@@ -149,7 +149,7 @@ function doi_display_get_content() {
       // query
       // Q. Should the title be used to store the DOI, rather than a defined field?
       $doi = $node->title;
-      $xmlobj = _get_xmlobj($doi);
+      $xmlobj = _doi_display_get_xmlobj($doi);
    
       // Create variables for each of the metadata items
       $node->field_doi_identifier[und][0][value] = $xmlobj->identifier;
@@ -169,7 +169,7 @@ function doi_display_get_content() {
       $node->field_doi_rights[und][0][value] = $xmlobj->rightsList->rights;
       $node->field_doi_location[und][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
    
-      $citation = _get_full_citation_from_doi($node->field_doi_identifier[und][0][value]);
+      $citation = _doi_display_get_full_citation_from_doi($node->field_doi_identifier[und][0][value]);
 
       // Output text from module to be displayed in the block
       $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
