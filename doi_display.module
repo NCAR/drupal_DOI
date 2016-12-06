@@ -8,8 +8,6 @@
 //          element in the JSON metadata, return that element.
 //     _get_full_citation_from_doi($doi)
 // function _get_xmlobj($doi) {
-// function _get_year_from_doi($doi) {
-// function _get_title_from_doi($doi) {
 
 // Define the block that displays the module
 function doi_display_block_info() {
@@ -131,14 +129,6 @@ function _get_xmlobj($doi) {
     return $xmlobj;
 }
 
-function _get_year_from_doi($doi) {
-    $xmlobj = _get_xmlobj($doi);
-    return($xmlobj->dates->date);
-}
-function _get_title_from_doi($doi) {
-    $xmlobj = _get_xmlobj($doi);
-    return($xmlobj->identifier);
-}
 
 // The subroutine that creates the actual display
 function doi_display_get_content() {
