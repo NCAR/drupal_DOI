@@ -4,6 +4,6 @@ package = EOL
 core = 7.x
 
 files[] = doi_display.module
-
+files[] = doi_display.install
 dependencies[] = date
 dependencies[] = entityreference
