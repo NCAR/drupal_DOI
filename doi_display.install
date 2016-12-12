@@ -254,50 +254,50 @@ function _doi_display_installed_fields() {
       'cardinality' => 1,
       'type'        => 'text',
     ),
-
+  
     'field_doi_creator' => array(
       'field_name'  => 'field_doi_creator',
       'cardinality' => 1,
       'type'        => 'text',
     ),
-
+  
     'field_doi_title' => array(
       'field_name'  => 'field_doi_title',
       'cardinality' => 1,
       'type'        => 'text',
     ),
-
+  
     'field_doi_publisher' => array(
       'field_name'  => 'field_doi_publisher',
       'cardinality' => 1,
       'type'        => 'text',
     ),
-
+  
     'field_doi_dates' => array(
       'field_name'  => 'field_doi_dates',
       'cardinality' => 1,
       'type'        => 'text',
     ),
-
+  
     'field_doi_location' => array(
       'field_name'  => 'field_doi_location',
       'cardinality' => 1,
       'type'        => 'text',
     ),
-
-
+  
+  
     'field_doi_description' => array(
       'field_name'  => 'field_doi_description',
       'cardinality' => 1,
       'type'        => 'text_long',
     ),
-
+  
     'field_doi_contributors' => array(
       'field_name'  => 'field_doi_contributors',
       'cardinality' => 1,
       'type'        => 'text_long',
     ),
-
+  
     'field_doi_rights' => array(
       'field_name'  => 'field_doi_rights',
       'cardinality' => 1,
@@ -356,7 +356,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_creator' => array(
       'field_name'  => 'field_doi_creator',
       'label' => t('Creator'),
@@ -371,7 +371,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_title' => array(
       'field_name'  => 'field_doi_title',
       'label' => t('Title'),
@@ -386,7 +386,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_publisher' => array(
       'field_name'  => 'field_doi_publisher',
       'label' => t('Publisher'),
@@ -401,7 +401,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_dates' => array(
       'field_name'  => 'field_doi_dates',
       'label' => t('Dates'),
@@ -416,7 +416,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_location' => array(
       'field_name'  => 'field_doi_location',
       'label' => t('Location'),
@@ -431,9 +431,9 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
-
-
+    
+    
+    
     'field_doi_description' => array(
       'field_name'  => 'field_doi_description',
       'label' => t('Description'),
@@ -448,7 +448,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_contributors' => array(
       'field_name'  => 'field_doi_contributors',
       'label' => t('Contributors'),
@@ -463,7 +463,7 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
+    
     'field_doi_rights' => array(
       'field_name'  => 'field_doi_rights',
       'label' => t('Rights'),
