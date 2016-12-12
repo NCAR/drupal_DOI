@@ -93,7 +93,49 @@ function doi_display_node_type_insert($content_type) {
       field_create_instance($instance);
     }
 
+    node_types_rebuild();
 
+	// Great the group
+
+  $group_name = 'group_no_edit';
+  $entity_type = 'node';
+  $bundle = 'doi_display';
+  $mode = 'form';
+
+	$group = (object) array(
+	      'identifier' => $group_name .'|'. $entity_type .'|'. $bundle .'|'. $mode,
+	      'group_name' => $group_name,
+	      'entity_type' => $entity_type,
+	      'bundle' => $bundle,
+	      'mode' => $mode,
+	      'label' => 'Don\'t edit these fields, they are populated by DataCite. Make changes there.',
+	      'weight' => '1',
+	      'children' => array(
+	        'field_doi_identifier',
+	        'field_doi_creator',
+	        'field_doi_title',
+	        'field_doi_publisher',
+	        'field_doi_description',
+	        'field_doi_contributors',
+	        'field_doi_dates',
+	        'field_doi_rights',
+	        'field_doi_location',
+	      ),
+	      'format_type' => 'fieldset',
+	      'format_settings' => array(
+	        'formatter' => 'collapsible',
+	        'instance_settings' => array(
+	          'description' => '',
+	          'classes' => '',
+	          'required_fields' => 1,
+	        ),
+	      ),
+	    );
+	    field_group_group_save($group);
+		field_group_group_save($field_group);
+		// ctools_include('export');
+		// ctools_export_crud_enable('field_group', $group->identifier);		
+	
 
     node_types_rebuild();
 
