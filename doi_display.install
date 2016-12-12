@@ -249,6 +249,19 @@ function theme_example_node_color($variables) {
  */
 function _doi_display_installed_fields() {
   return array(
+	'field_first_use_paper' => array(
+		'field_name'  => 'field_first_use_paper',
+		'cardinality' => 1,
+		'type'        => 'entityreference',
+		'settings' => array(
+			'target_type' => 'node',
+			'handler_settings' => array(
+				'target_bundles' => array('publication')
+			),
+		),
+	),
+
+
     'field_doi_identifier' => array(
       'field_name'  => 'field_doi_identifier',
       'cardinality' => 1,
@@ -342,6 +355,34 @@ function _doi_display_installed_fields() {
  */
 function _doi_display_installed_instances() {
   return array(
+
+
+    'field_first_use_paper' => array(
+      'field_name'  => 'field_first_use_paper',
+      'label' => t('First Use Paper'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'autocomplete',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+     'settings' => array(
+       'target_type' => 'node',
+    	      'handler_settings' => array(
+    		    'target_bundles' => array('publication')
+    	       ),
+    	    ),
+    
+    ),
+    
+    
+
+
+
     'field_doi_identifier' => array(
       'field_name'  => 'field_doi_identifier',
       'label' => t('Identifier'),
