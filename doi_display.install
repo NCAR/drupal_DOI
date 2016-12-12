@@ -1,0 +1,385 @@
+<?php
+// Install / remove the doi content type during module installation / removal
+
+
+
+/**
+ * @file
+ * Module file for Node Example module.
+ *
+ * Part of the Examples for Developers project.
+ */
+
+/**
+ * Implements hook_menu().
+ *
+ * We are providing a default page to illustrate the use of our custom node view
+ * mode that will live at http://example.com/?q=examples/doi_display
+ */
+function doi_display_menu() {
+  $items['examples/doi_display'] = array(
+    'page callback' => 'doi_display_page',
+    'access arguments' => array('access content'),
+    'title' => 'Node Example',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_node_info().
+ *
+ * We use hook_node_info() to define our node content type.
+ */
+function doi_display_node_info() {
+  // We define the node type as an associative array.
+  return array(
+    'doi_display' => array(
+      'name' => t('Example Node Type'),
+      // 'base' tells Drupal the base string for hook functions.
+      // This is often the module name; if base is set to 'mymodule',
+      // Drupal would call mymodule_insert() or similar for node
+      // hooks. In our case, the base is 'doi_display'.
+      'base' => 'doi_display',
+      'description' => t('This is an example node type with a few fields.'),
+      'title_label' => t('Example Title'),
+      // We'll set the 'locked' attribute to TRUE, so users won't be
+      // able to change the machine name of our content type.
+      'locked' => TRUE,
+    ),
+  );
+}
+
+/**
+ * Implements hook_node_type_insert().
+ *
+ * Much like hook_node_insert() lets us know that a node is being
+ * inserted into the database, hook_node_type_insert() lets us know
+ * that a new content type has been inserted.
+ *
+ * Since Drupal will at some point insert our new content type,
+ * this gives us a chance to add the fields we want.
+ *
+ * It is called for all inserts to the content type database, so
+ * we have to make sure we're only modifying the type we're
+ * concerned with.
+ */
+function doi_display_node_type_insert($content_type) {
+  if ($content_type->type == 'doi_display') {
+    // First we add the body field. Node API helpfully gives us
+    // node_add_body_field().
+    // We'll set the body label now, although we could also set
+    // it along with our other instance properties later.
+    $body_instance = node_add_body_field($content_type, t('Example Description'));
+
+    // Add our example_node_list view mode to the body instance
+    // display by instructing the body to display as a summary.
+    $body_instance['display']['example_node_list'] = array(
+      'label' => 'hidden',
+      'type' => 'text_summary_or_trimmed',
+    );
+
+    // Save our changes to the body field instance.
+    field_update_instance($body_instance);
+
+    // Create all the fields we are adding to our content type.
+    foreach (_doi_display_installed_fields() as $field) {
+      field_create_field($field);
+    }
+
+    // Create all the instances for our fields.
+    foreach (_doi_display_installed_instances() as $instance) {
+      $instance['entity_type'] = 'node';
+      $instance['bundle'] = 'doi_display';
+      field_create_instance($instance);
+    }
+
+    node_types_rebuild();
+
+  }
+
+}
+
+/**
+ * Implements hook_form().
+ *
+ * Drupal needs for us to provide a form that lets the user
+ * add content. This is the form that the user will see if
+ * they go to node/add/node-example.
+ *
+ * You can get fancy with this form, or you can just punt
+ * and return the default form that node_content will provide.
+ */
+function doi_display_form($node, $form_state) {
+  return node_content_form($node, $form_state);
+}
+
+/**
+ * Callback that builds our content and returns it to the browser.
+ *
+ * This callback comes from hook_menu().
+ *
+ * @return array
+ *   A renderable array showing a list of our nodes.
+ *
+ * @see node_load()
+ * @see node_view()
+ * @see doi_display_field_formatter_view()
+ */
+function doi_display_page() {
+  // We'll start building a renderable array that will be our page.
+  // For now we just declare the array.
+  $renderable_array = array();
+  // We query the database and find all of the nodes for the type we defined.
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
+  $result = db_query($sql,
+    array(
+      ':type' => 'doi_display',
+      ':status' => 1,
+    )
+  );
+  $renderable_array['explanation'] = array(
+    '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
+  );
+  // Loop through each of our doi_display nodes and instruct node_view
+  // to use our "example_node_list" view.
+  // http://api.drupal.org/api/function/node_load/7
+  // http://api.drupal.org/api/function/node_view/7
+  foreach ($result as $row) {
+    $node = node_load($row->nid);
+    $renderable_array['node_list'][] = node_view($node, 'example_node_list');
+  }
+  return $renderable_array;
+}
+
+/**
+ * Implements hook_entity_info_alter().
+ *
+ * We need to modify the default node entity info by adding a new view mode to
+ * be used in functions like node_view() or node_build_content().
+ */
+function doi_display_entity_info_alter(&$entity_info) {
+  // Add our new view mode to the list of view modes...
+  $entity_info['node']['view modes']['example_node_list'] = array(
+    'label' => t('Example Node List'),
+    'custom settings' => TRUE,
+  );
+}
+
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function doi_display_field_formatter_info() {
+  return array(
+    'doi_display_colors' => array(
+      'label' => t('Node Example Color Handle'),
+      'field types' => array('text'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ *
+ * @todo: We need to provide a formatter for the colors that a user is allowed
+ * to enter during node creation.
+ */
+function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  switch ($display['type']) {
+    case 'doi_display_colors':
+      foreach ($items as $delta => $item) {
+        $element[$delta]['#type'] = 'markup';
+        $color = $item['safe_value'];
+        $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
+      }
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * This lets us tell Drupal about our theme functions and their arguments.
+ */
+function doi_display_theme($existing, $type, $theme, $path) {
+  return array(
+    'example_node_color' => array(
+      'variables' => array('color' => NULL),
+    ),
+  );
+}
+
+/**
+ * Implements hook_help().
+ */
+function doi_display_help($path, $arg) {
+  switch ($path) {
+    case 'examples/doi_display':
+      return "<p>" . t("The Node Example module provides a custom node type.
+        You can create new Example Node nodes using the <a href='!nodeadd'>node add form</a>.",
+        array('!nodeadd' => url('node/add/node-example'))) . "</p>";
+  }
+}
+
+/**
+ * A custom theme function.
+ *
+ * By using this function to format our node-specific information, themes
+ * can override this presentation if they wish.  This is a simplifed theme
+ * function purely for illustrative purposes.
+ */
+function theme_example_node_color($variables) {
+  $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
+  return $output;
+}
+
+/**
+ * Define the fields for our content type.
+ *
+ * This big array is factored into this function for readability.
+ *
+ * @return array
+ *   An associative array specifying the fields we wish to add to our
+ *   new node type.
+ */
+function _doi_display_installed_fields() {
+  return array(
+    'doi_display_color' => array(
+      'field_name' => 'doi_display_color',
+      'cardinality' => 3,
+      'type'        => 'text',
+      'settings'    => array(
+        'max_length' => 60,
+      ),
+    ),
+    'doi_display_quantity' => array(
+      'field_name'  => 'doi_display_quantity',
+      'cardinality' => 1,
+      'type'        => 'text',
+    ),
+    'doi_display_image' => array(
+      'field_name' => 'doi_display_image',
+      'type'       => 'image',
+      'cardinality' => 1,
+    ),
+  );
+}
+
+/**
+ * Define the field instances for our content type.
+ *
+ * The instance lets Drupal know which widget to use to allow the user to enter
+ * data and how to react in different view modes.  We are going to display a
+ * page that uses a custom "doi_display_list" view mode.  We will set a
+ * cardinality of three allowing our content type to give the user three color
+ * fields.
+ *
+ * This big array is factored into this function for readability.
+ *
+ * @return array
+ *   An associative array specifying the instances we wish to add to our new
+ *   node type.
+ */
+function _doi_display_installed_instances() {
+  return array(
+    'doi_display_color' => array(
+      'field_name' => 'doi_display_color',
+      'label'       => t('The colors available for this object.'),
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+      'display' => array(
+        'example_node_list' => array(
+          'label' => 'hidden',
+          'type' => 'doi_display_colors',
+        ),
+      ),
+    ),
+    'doi_display_quantity' => array(
+      'field_name'  => 'doi_display_quantity',
+      'label' => t('Quantity required'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+      'display' => array(
+        'example_node_list' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+    'doi_display_image' => array(
+      'field_name'  => 'doi_display_image',
+      'label'       => t('Upload an image:'),
+      'required'    => FALSE,
+      'widget' => array(
+        'type'    => 'image_image',
+        'weight'  => 2.10,
+      ),
+      'display' => array(
+        'example_node_list' => array(
+          'label' => 'hidden',
+          'type' => 'image_link_content__thumbnail',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * @} End of "defgroup doi_display".
+ */
+
+
+
+
+
+
+
+
+/**
+ * Implements hook_uninstall().
+ */
+function doi_display_uninstall() {
+    $ournewtype = 'doi-display';
+    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result = db_query($sql, array(':type' => $ournewtype));
+    $nodeids = array();
+    foreach ($result as $row) {
+        $nodeids[] = $row->nid;
+    }
+    node_delete_multiple($nodeids);
+    node_type_delete($ournewtype);
+}
+
+
+// $types = array(
+//     array(
+//       'type' => 'page',
+//       'name' => st('Basic page'),
+//       'base' => 'node_content',
+//       'description' => st("Use basic pages for your static content, such as an 'About us' page."),
+//       'custom' => 1,
+//       'modified' => 1,
+//       'locked' => 0,
+//     ),
+//     array(
+//       'type' => 'article',
+//       'name' => st('Article'),
+//       'base' => 'node_content',
+//       'description' => st('Use articles for time-sensitive content like news, press releases or blog posts.'),
+//       'custom' => 1,
+//       'modified' => 1,
+//       'locked' => 0,
+//     ),
+//   );
+// 
+//   foreach ($types as $type) {
+//     $type = node_type_set_defaults($type);
+//     node_type_save($type);
+//     node_add_body_field($type);
+//   }
