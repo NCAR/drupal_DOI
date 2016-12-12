@@ -16,14 +16,14 @@
  * We are providing a default page to illustrate the use of our custom node view
  * mode that will live at http://example.com/?q=examples/doi_display
  */
-// function doi_display_menu() {
-//   $items['examples/doi_display'] = array(
-//     'page callback' => 'doi_display_page',
-//     'access arguments' => array('access content'),
-//     'title' => 'Node Example',
-//   );
-//   return $items;
-// }
+function doi_display_menu() {
+  $items['examples/doi_display'] = array(
+    'page callback' => 'doi_display_page',
+    'access arguments' => array('access content'),
+    'title' => 'Node Example',
+  );
+  return $items;
+}
 
 /**
  * Implements hook_node_info().
@@ -93,6 +93,8 @@ function doi_display_node_type_insert($content_type) {
       field_create_instance($instance);
     }
 
+
+
     node_types_rebuild();
 
   }
@@ -125,31 +127,31 @@ function doi_display_form($node, $form_state) {
  * @see node_view()
  * @see doi_display_field_formatter_view()
  */
-// function doi_display_page() {
-//   // We'll start building a renderable array that will be our page.
-//   // For now we just declare the array.
-//   $renderable_array = array();
-//   // We query the database and find all of the nodes for the type we defined.
-//   $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
-//   $result = db_query($sql,
-//     array(
-//       ':type' => 'doi_display',
-//       ':status' => 1,
-//     )
-//   );
-//   $renderable_array['explanation'] = array(
-//     '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
-//   );
-//   // Loop through each of our doi_display nodes and instruct node_view
-//   // to use our "example_node_list" view.
-//   // http://api.drupal.org/api/function/node_load/7
-//   // http://api.drupal.org/api/function/node_view/7
-//   foreach ($result as $row) {
-//     $node = node_load($row->nid);
-//     $renderable_array['node_list'][] = node_view($node, 'example_node_list');
-//   }
-//   return $renderable_array;
-// }
+function doi_display_page() {
+  // We'll start building a renderable array that will be our page.
+  // For now we just declare the array.
+  $renderable_array = array();
+  // We query the database and find all of the nodes for the type we defined.
+  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
+  $result = db_query($sql,
+    array(
+      ':type' => 'doi_display',
+      ':status' => 1,
+    )
+  );
+  $renderable_array['explanation'] = array(
+    '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
+  );
+  // Loop through each of our doi_display nodes and instruct node_view
+  // to use our "example_node_list" view.
+  // http://api.drupal.org/api/function/node_load/7
+  // http://api.drupal.org/api/function/node_view/7
+  foreach ($result as $row) {
+    $node = node_load($row->nid);
+    $renderable_array['node_list'][] = node_view($node, 'example_node_list');
+  }
+  return $renderable_array;
+}
 
 /**
  * Implements hook_entity_info_alter().
@@ -157,26 +159,26 @@ function doi_display_form($node, $form_state) {
  * We need to modify the default node entity info by adding a new view mode to
  * be used in functions like node_view() or node_build_content().
  */
-// function doi_display_entity_info_alter(&$entity_info) {
-//   // Add our new view mode to the list of view modes...
-//   $entity_info['node']['view modes']['example_node_list'] = array(
-//     'label' => t('Example Node List'),
-//     'custom settings' => TRUE,
-//   );
-// }
+function doi_display_entity_info_alter(&$entity_info) {
+  // Add our new view mode to the list of view modes...
+  $entity_info['node']['view modes']['example_node_list'] = array(
+    'label' => t('Example Node List'),
+    'custom settings' => TRUE,
+  );
+}
 
 
 /**
  * Implements hook_field_formatter_info().
  */
-// function doi_display_field_formatter_info() {
-//   return array(
-//     'doi_display_colors' => array(
-//       'label' => t('Node Example Color Handle'),
-//       'field types' => array('text'),
-//     ),
-//   );
-// }
+function doi_display_field_formatter_info() {
+  return array(
+    'doi_display_colors' => array(
+      'label' => t('Node Example Color Handle'),
+      'field types' => array('text'),
+    ),
+  );
+}
 
 /**
  * Implements hook_field_formatter_view().
@@ -184,33 +186,33 @@ function doi_display_form($node, $form_state) {
  * @todo: We need to provide a formatter for the colors that a user is allowed
  * to enter during node creation.
  */
-// function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
-//   $element = array();
-//   switch ($display['type']) {
-//     case 'doi_display_colors':
-//       foreach ($items as $delta => $item) {
-//         $element[$delta]['#type'] = 'markup';
-//         $color = $item['safe_value'];
-//         $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
-//       }
-//       break;
-//   }
-// 
-//   return $element;
-// }
+function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  switch ($display['type']) {
+    case 'doi_display_colors':
+      foreach ($items as $delta => $item) {
+        $element[$delta]['#type'] = 'markup';
+        $color = $item['safe_value'];
+        $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
+      }
+      break;
+  }
+
+  return $element;
+}
 
 /**
  * Implements hook_theme().
  *
  * This lets us tell Drupal about our theme functions and their arguments.
  */
-// function doi_display_theme($existing, $type, $theme, $path) {
-//   return array(
-//     'example_node_color' => array(
-//       'variables' => array('color' => NULL),
-//     ),
-//   );
-// }
+function doi_display_theme($existing, $type, $theme, $path) {
+  return array(
+    'example_node_color' => array(
+      'variables' => array('color' => NULL),
+    ),
+  );
+}
 
 /**
  * Implements hook_help().
@@ -231,10 +233,10 @@ function doi_display_form($node, $form_state) {
  * can override this presentation if they wish.  This is a simplifed theme
  * function purely for illustrative purposes.
  */
-// function theme_example_node_color($variables) {
-//   $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
-//   return $output;
-// }
+function theme_example_node_color($variables) {
+  $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
+  return $output;
+}
 
 /**
  * Define the fields for our content type.
@@ -247,24 +249,79 @@ function doi_display_form($node, $form_state) {
  */
 function _doi_display_installed_fields() {
   return array(
-    'doi_display_color' => array(
-      'field_name' => 'doi_display_color',
-      'cardinality' => 3,
-      'type'        => 'text',
-      'settings'    => array(
-        'max_length' => 60,
-      ),
-    ),
-    'doi_display_quantity' => array(
-      'field_name'  => 'doi_display_quantity',
+    'field_doi_identifier' => array(
+      'field_name'  => 'field_doi_identifier',
       'cardinality' => 1,
       'type'        => 'text',
     ),
-    'doi_display_image' => array(
-      'field_name' => 'doi_display_image',
-      'type'       => 'image',
+
+    'field_doi_creator' => array(
+      'field_name'  => 'field_doi_creator',
       'cardinality' => 1,
+      'type'        => 'text',
     ),
+
+    'field_doi_title' => array(
+      'field_name'  => 'field_doi_title',
+      'cardinality' => 1,
+      'type'        => 'text',
+    ),
+
+    'field_doi_publisher' => array(
+      'field_name'  => 'field_doi_publisher',
+      'cardinality' => 1,
+      'type'        => 'text',
+    ),
+
+    'field_doi_dates' => array(
+      'field_name'  => 'field_doi_dates',
+      'cardinality' => 1,
+      'type'        => 'text',
+    ),
+
+    'field_doi_location' => array(
+      'field_name'  => 'field_doi_location',
+      'cardinality' => 1,
+      'type'        => 'text',
+    ),
+
+
+    'field_doi_description' => array(
+      'field_name'  => 'field_doi_description',
+      'cardinality' => 1,
+      'type'        => 'text_long',
+    ),
+
+    'field_doi_contributors' => array(
+      'field_name'  => 'field_doi_contributors',
+      'cardinality' => 1,
+      'type'        => 'text_long',
+    ),
+
+    'field_doi_rights' => array(
+      'field_name'  => 'field_doi_rights',
+      'cardinality' => 1,
+      'type'        => 'text_long',
+    ),
+
+    // 'doi_display_color' => array(
+    //   'field_name' => 'doi_display_color',
+    //   'cardinality' => 3,
+    //   'type'        => 'text',
+    //   'settings'    => array(
+    //     'max_length' => 60,
+    //   ),
+    // ),
+    // 'doi_display_quantity' => array(
+    //   'field_name'  => 'doi_display_quantity',
+    //   'cardinality' => 1,
+    //   'type'        => 'text',
+    // ),
+    // 'doi_display_image' => array(
+    //   'field_name' => 'doi_display_image',
+    //   'type'       => 'image',
+    //   'cardinality' => 1,
+    // ),
   );
 }
 
@@ -285,48 +342,185 @@ function _doi_display_installed_fields() {
  */
 function _doi_display_installed_instances() {
   return array(
-    'doi_display_color' => array(
-      'field_name' => 'doi_display_color',
-      'label'       => t('The colors available for this object.'),
-      'widget'      => array(
-        'type'    => 'text_textfield',
-      ),
-      'display' => array(
-        'example_node_list' => array(
-          'label' => 'hidden',
-          'type' => 'doi_display_colors',
-        ),
-      ),
-    ),
-    'doi_display_quantity' => array(
-      'field_name'  => 'doi_display_quantity',
-      'label' => t('Quantity required'),
+    'field_doi_identifier' => array(
+      'field_name'  => 'field_doi_identifier',
+      'label' => t('Identifier'),
       'type'        => 'text',
       'widget'      => array(
         'type'    => 'text_textfield',
       ),
       'display' => array(
-        'example_node_list' => array(
+        'default' => array(
           'label' => 'hidden',
           'type' => 'hidden',
         ),
       ),
     ),
-    'doi_display_image' => array(
-      'field_name'  => 'doi_display_image',
-      'label'       => t('Upload an image:'),
-      'required'    => FALSE,
-      'widget' => array(
-        'type'    => 'image_image',
-        'weight'  => 2.10,
+
+    'field_doi_creator' => array(
+      'field_name'  => 'field_doi_creator',
+      'label' => t('Creator'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'text_textfield',
       ),
       'display' => array(
-        'example_node_list' => array(
+        'default' => array(
           'label' => 'hidden',
-          'type' => 'image_link_content__thumbnail',
+          'type' => 'hidden',
         ),
       ),
     ),
+
+    'field_doi_title' => array(
+      'field_name'  => 'field_doi_title',
+      'label' => t('Title'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'field_doi_publisher' => array(
+      'field_name'  => 'field_doi_publisher',
+      'label' => t('Publisher'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'field_doi_dates' => array(
+      'field_name'  => 'field_doi_dates',
+      'label' => t('Dates'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'field_doi_location' => array(
+      'field_name'  => 'field_doi_location',
+      'label' => t('Location'),
+      'type'        => 'text',
+      'widget'      => array(
+        'type'    => 'text_textfield',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+
+
+    'field_doi_description' => array(
+      'field_name'  => 'field_doi_description',
+      'label' => t('Description'),
+      'type'        => 'text_long',
+      'widget'      => array(
+        'type'    => 'text_textarea',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'field_doi_contributors' => array(
+      'field_name'  => 'field_doi_contributors',
+      'label' => t('Contributors'),
+      'type'        => 'text_long',
+      'widget'      => array(
+        'type'    => 'text_textarea',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'field_doi_rights' => array(
+      'field_name'  => 'field_doi_rights',
+      'label' => t('Rights'),
+      'type'        => 'text_long',
+      'widget'      => array(
+        'type'    => 'text_textarea',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    // 'doi_display_color' => array(
+    //   'field_name' => 'doi_display_color',
+    //   'label'       => t('The colors available for this object.'),
+    //   'widget'      => array(
+    //     'type'    => 'text_textfield',
+    //   ),
+    //   'display' => array(
+    //     'example_node_list' => array(
+    //       'label' => 'hidden',
+    //       'type' => 'doi_display_colors',
+    //     ),
+    //   ),
+    // ),
+    // 'doi_display_quantity' => array(
+    //   'field_name'  => 'doi_display_quantity',
+    //   'label' => t('Quantity required'),
+    //   'type'        => 'text',
+    //   'widget'      => array(
+    //     'type'    => 'text_textfield',
+    //   ),
+    //   'display' => array(
+    //     'example_node_list' => array(
+    //       'label' => 'hidden',
+    //       'type' => 'hidden',
+    //     ),
+    //   ),
+    // ),
+    // 'doi_display_image' => array(
+    //   'field_name'  => 'doi_display_image',
+    //   'label'       => t('Upload an image:'),
+    //   'required'    => FALSE,
+    //   'widget' => array(
+    //     'type'    => 'image_image',
+    //     'weight'  => 2.10,
+    //   ),
+    //   'display' => array(
+    //     'example_node_list' => array(
+    //       'label' => 'hidden',
+    //       'type' => 'image_link_content__thumbnail',
+    //     ),
+    //   ),
+    // ),
   );
 }
 
@@ -340,7 +534,7 @@ function _doi_display_installed_instances() {
  * Implements hook_uninstall().
  */
 function doi_display_uninstall() {
-    $ournewtype = 'doi-display';
+    $ournewtype = 'doi_display';
     $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
     $result = db_query($sql, array(':type' => $ournewtype));
     $nodeids = array();
@@ -350,33 +544,21 @@ function doi_display_uninstall() {
     node_delete_multiple($nodeids);
     node_type_delete($ournewtype);
 
+    $ournewtype = 'doi-display';
+    node_type_delete($ournewtype);
+
+
+    foreach (_doi_display_installed_fields() as $field) {
+      field_delete_field($field['field_name']);
+// print "\n\nTEST\n\n";
+// var_dump();
+		dsm($fields);
+    }
+
+	// DOES need to be run twice
+	field_purge_batch(1000); 
+	field_purge_batch(1000); 
 
 }
 
 
-// $types = array(
-//     array(
-//       'type' => 'page',
-//       'name' => st('Basic page'),
-//       'base' => 'node_content',
-//       'description' => st("Use basic pages for your static content, such as an 'About us' page."),
-//       'custom' => 1,
-//       'modified' => 1,
-//       'locked' => 0,
-//     ),
-//     array(
-//       'type' => 'article',
-//       'name' => st('Article'),
-//       'base' => 'node_content',
-//       'description' => st('Use articles for time-sensitive content like news, press releases or blog posts.'),
-//       'custom' => 1,
-//       'modified' => 1,
-//       'locked' => 0,
-//     ),
-//   );
-// 
-//   foreach ($types as $type) {
-//     $type = node_type_set_defaults($type);
-//     node_type_save($type);
-//     node_add_body_field($type);
-//   }
