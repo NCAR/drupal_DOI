@@ -16,14 +16,14 @@
  * We are providing a default page to illustrate the use of our custom node view
  * mode that will live at http://example.com/?q=examples/doi_display
  */
-function doi_display_menu() {
-  $items['examples/doi_display'] = array(
-    'page callback' => 'doi_display_page',
-    'access arguments' => array('access content'),
-    'title' => 'Node Example',
-  );
-  return $items;
-}
+// function doi_display_menu() {
+//   $items['examples/doi_display'] = array(
+//     'page callback' => 'doi_display_page',
+//     'access arguments' => array('access content'),
+//     'title' => 'Node Example',
+//   );
+//   return $items;
+// }
 
 /**
  * Implements hook_node_info().
@@ -34,14 +34,14 @@ function doi_display_node_info() {
   // We define the node type as an associative array.
   return array(
     'doi_display' => array(
-      'name' => t('Example Node Type'),
+      'name' => t('DOI'),
       // 'base' tells Drupal the base string for hook functions.
       // This is often the module name; if base is set to 'mymodule',
       // Drupal would call mymodule_insert() or similar for node
       // hooks. In our case, the base is 'doi_display'.
       'base' => 'doi_display',
-      'description' => t('This is an example node type with a few fields.'),
-      'title_label' => t('Example Title'),
+      'description' => t(''),
+      'title_label' => t('Digital Object Identifier'),
       // We'll set the 'locked' attribute to TRUE, so users won't be
       // able to change the machine name of our content type.
       'locked' => TRUE,
@@ -215,14 +215,14 @@ function doi_display_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_help().
  */
-function doi_display_help($path, $arg) {
-  switch ($path) {
-    case 'examples/doi_display':
-      return "<p>" . t("The Node Example module provides a custom node type.
-        You can create new Example Node nodes using the <a href='!nodeadd'>node add form</a>.",
-        array('!nodeadd' => url('node/add/node-example'))) . "</p>";
-  }
-}
+// function doi_display_help($path, $arg) {
+//   switch ($path) {
+//     case 'examples/doi_display':
+//       return "<p>" . t("The Node Example module provides a custom node type.
+//         You can create new Example Node nodes using the <a href='!nodeadd'>node add form</a>.",
+//         array('!nodeadd' => url('node/add/node-example'))) . "</p>";
+//   }
+// }
 
 /**
  * A custom theme function.
@@ -345,7 +345,7 @@ function _doi_display_installed_instances() {
  * Implements hook_uninstall().
  */
 function doi_display_uninstall() {
-    $ournewtype = 'doi-display';
+    $ournewtype = 'doi_display';
     $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
     $result = db_query($sql, array(':type' => $ournewtype));
     $nodeids = array();
