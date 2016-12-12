@@ -69,17 +69,17 @@ function doi_display_node_type_insert($content_type) {
     // node_add_body_field().
     // We'll set the body label now, although we could also set
     // it along with our other instance properties later.
-    $body_instance = node_add_body_field($content_type, t('Example Description'));
+    // $body_instance = node_add_body_field($content_type, t('Example Description'));
 
     // Add our example_node_list view mode to the body instance
     // display by instructing the body to display as a summary.
-    $body_instance['display']['example_node_list'] = array(
-      'label' => 'hidden',
-      'type' => 'text_summary_or_trimmed',
-    );
+    // $body_instance['display']['example_node_list'] = array(
+    //   'label' => 'hidden',
+    //   'type' => 'text_summary_or_trimmed',
+    // );
 
     // Save our changes to the body field instance.
-    field_update_instance($body_instance);
+    // field_update_instance($body_instance);
 
     // Create all the fields we are adding to our content type.
     foreach (_doi_display_installed_fields() as $field) {
@@ -125,31 +125,31 @@ function doi_display_form($node, $form_state) {
  * @see node_view()
  * @see doi_display_field_formatter_view()
  */
-function doi_display_page() {
-  // We'll start building a renderable array that will be our page.
-  // For now we just declare the array.
-  $renderable_array = array();
-  // We query the database and find all of the nodes for the type we defined.
-  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
-  $result = db_query($sql,
-    array(
-      ':type' => 'doi_display',
-      ':status' => 1,
-    )
-  );
-  $renderable_array['explanation'] = array(
-    '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
-  );
-  // Loop through each of our doi_display nodes and instruct node_view
-  // to use our "example_node_list" view.
-  // http://api.drupal.org/api/function/node_load/7
-  // http://api.drupal.org/api/function/node_view/7
-  foreach ($result as $row) {
-    $node = node_load($row->nid);
-    $renderable_array['node_list'][] = node_view($node, 'example_node_list');
-  }
-  return $renderable_array;
-}
+// function doi_display_page() {
+//   // We'll start building a renderable array that will be our page.
+//   // For now we just declare the array.
+//   $renderable_array = array();
+//   // We query the database and find all of the nodes for the type we defined.
+//   $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
+//   $result = db_query($sql,
+//     array(
+//       ':type' => 'doi_display',
+//       ':status' => 1,
+//     )
+//   );
+//   $renderable_array['explanation'] = array(
+//     '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
+//   );
+//   // Loop through each of our doi_display nodes and instruct node_view
+//   // to use our "example_node_list" view.
+//   // http://api.drupal.org/api/function/node_load/7
+//   // http://api.drupal.org/api/function/node_view/7
+//   foreach ($result as $row) {
+//     $node = node_load($row->nid);
+//     $renderable_array['node_list'][] = node_view($node, 'example_node_list');
+//   }
+//   return $renderable_array;
+// }
 
 /**
  * Implements hook_entity_info_alter().
@@ -157,26 +157,26 @@ function doi_display_page() {
  * We need to modify the default node entity info by adding a new view mode to
  * be used in functions like node_view() or node_build_content().
  */
-function doi_display_entity_info_alter(&$entity_info) {
-  // Add our new view mode to the list of view modes...
-  $entity_info['node']['view modes']['example_node_list'] = array(
-    'label' => t('Example Node List'),
-    'custom settings' => TRUE,
-  );
-}
+// function doi_display_entity_info_alter(&$entity_info) {
+//   // Add our new view mode to the list of view modes...
+//   $entity_info['node']['view modes']['example_node_list'] = array(
+//     'label' => t('Example Node List'),
+//     'custom settings' => TRUE,
+//   );
+// }
 
 
 /**
  * Implements hook_field_formatter_info().
  */
-function doi_display_field_formatter_info() {
-  return array(
-    'doi_display_colors' => array(
-      'label' => t('Node Example Color Handle'),
-      'field types' => array('text'),
-    ),
-  );
-}
+// function doi_display_field_formatter_info() {
+//   return array(
+//     'doi_display_colors' => array(
+//       'label' => t('Node Example Color Handle'),
+//       'field types' => array('text'),
+//     ),
+//   );
+// }
 
 /**
  * Implements hook_field_formatter_view().
@@ -184,33 +184,33 @@ function doi_display_field_formatter_info() {
  * @todo: We need to provide a formatter for the colors that a user is allowed
  * to enter during node creation.
  */
-function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
-  $element = array();
-  switch ($display['type']) {
-    case 'doi_display_colors':
-      foreach ($items as $delta => $item) {
-        $element[$delta]['#type'] = 'markup';
-        $color = $item['safe_value'];
-        $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
-      }
-      break;
-  }
-
-  return $element;
-}
+// function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
+//   $element = array();
+//   switch ($display['type']) {
+//     case 'doi_display_colors':
+//       foreach ($items as $delta => $item) {
+//         $element[$delta]['#type'] = 'markup';
+//         $color = $item['safe_value'];
+//         $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
+//       }
+//       break;
+//   }
+// 
+//   return $element;
+// }
 
 /**
  * Implements hook_theme().
  *
  * This lets us tell Drupal about our theme functions and their arguments.
  */
-function doi_display_theme($existing, $type, $theme, $path) {
-  return array(
-    'example_node_color' => array(
-      'variables' => array('color' => NULL),
-    ),
-  );
-}
+// function doi_display_theme($existing, $type, $theme, $path) {
+//   return array(
+//     'example_node_color' => array(
+//       'variables' => array('color' => NULL),
+//     ),
+//   );
+// }
 
 /**
  * Implements hook_help().
@@ -231,10 +231,10 @@ function doi_display_theme($existing, $type, $theme, $path) {
  * can override this presentation if they wish.  This is a simplifed theme
  * function purely for illustrative purposes.
  */
-function theme_example_node_color($variables) {
-  $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
-  return $output;
-}
+// function theme_example_node_color($variables) {
+//   $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
+//   return $output;
+// }
 
 /**
  * Define the fields for our content type.
@@ -330,11 +330,6 @@ function _doi_display_installed_instances() {
   );
 }
 
-/**
- * @} End of "defgroup doi_display".
- */
-
-
 
 
 
@@ -345,7 +340,7 @@ function _doi_display_installed_instances() {
  * Implements hook_uninstall().
  */
 function doi_display_uninstall() {
-    $ournewtype = 'doi_display';
+    $ournewtype = 'doi-display';
     $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
     $result = db_query($sql, array(':type' => $ournewtype));
     $nodeids = array();
@@ -354,6 +349,8 @@ function doi_display_uninstall() {
     }
     node_delete_multiple($nodeids);
     node_type_delete($ournewtype);
+
+
 }
 
 
