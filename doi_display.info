@@ -7,3 +7,5 @@ files[] = doi_display.module
 files[] = doi_display.install
 dependencies[] = date
 dependencies[] = entityreference
+dependencies[] = field_group
+
