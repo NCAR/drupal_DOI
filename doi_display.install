@@ -101,16 +101,8 @@ function doi_display_form($node, $form_state) {
 }
 
 /**
- * Callback that builds our content and returns it to the browser.
  *
  * This callback comes from hook_menu().
- *
- * @return array
- *   A renderable array showing a list of our nodes.
- *
- * @see node_load()
- * @see node_view()
- * @see doi_display_field_formatter_view()
  */
 function doi_display_page() {
   // We'll start building a renderable array that will be our page.
