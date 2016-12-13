@@ -50,6 +50,10 @@ function doi_display_node_type_insert($content_type) {
       field_create_instance($instance);
     }
 
+    node_types_rebuild();
+
+
+
 	// Create the group
 	$group_name = 'group_no_edit';
 	$entity_type = 'node';
@@ -298,27 +302,26 @@ function _doi_display_installed_instances() {
   return array(
 
 
-    'field_first_use_paper' => array(
-      'field_name'  => 'field_first_use_paper',
-      'label' => t('First Use Paper'),
-      'type'        => 'text',
-      'widget'      => array(
-        'type'    => 'autocomplete',
-      ),
-      'display' => array(
-        'default' => array(
-          'label' => 'hidden',
-          'type' => 'hidden',
-        ),
-      ),
-     'settings' => array(
-       'target_type' => 'node',
-    	      'handler_settings' => array(
-    		    'target_bundles' => array('publication')
-    	       ),
-    	    ),
-    
-    ),
+	'field_first_use_paper' => array(
+		'field_name'  => 'field_first_use_paper',
+		'label' => t('First Use Paper'),
+		'type'        => 'text',
+		'widget'      => array(
+			'type'    => 'autocomplete',
+		),
+		'settings' => array(
+			'target_type' => 'node',
+			'handler_settings' => array(
+				'target_bundles' => array('publication')
+			),
+		),
+		// 'display' => array(
+		// 	'default' => array(
+		// 	'label' => 'hidden',
+		// 	'type' => 'hidden',
+		// 	),
+		// ),
+	),
     
     'field_doi_identifier' => array(
       'field_name'  => 'field_doi_identifier',
