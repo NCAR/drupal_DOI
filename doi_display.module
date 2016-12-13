@@ -145,7 +145,7 @@ function doi_display_get_content() {
     }
 
     // Check if field_doi_reference exists and is set
-    if (!isset($current_node->field_doi_reference[und][0][target_id])) {
+    if (!isset($current_node->field_doi_reference['und'][0]['target_id'])) {
       return;
     }
 
@@ -153,7 +153,7 @@ function doi_display_get_content() {
     else {
 
       // Get node id of content type containing the doi
-      $nid = $current_node->field_doi_reference[und][0][target_id];
+      $nid = $current_node->field_doi_reference['und'][0]['target_id'];
       $node = node_load($nid); 
       
       // Grab the value in the title of the doi content type which contains the doi
@@ -164,34 +164,37 @@ function doi_display_get_content() {
       $xmlobj = _doi_display_get_xmlobj($doi);
    
       // Create variables for each of the metadata items
-      $node->field_doi_identifier[und][0][value] = $xmlobj->identifier;
-      $node->field_doi_creator[und][0][value] = $xmlobj->creators->creator->creatorName;
-      $node->field_doi_title[und][0][value] = $xmlobj->titles->title;
-      $node->field_doi_publisher[und][0][value] = $xmlobj->publisher;
-      $node->field_doi_description[und][0][value] = $xmlobj->descriptions->description;
+      $node->field_doi_identifier['und'][0][value] = $xmlobj->identifier;
+      $node->field_doi_creator['und'][0][value] = $xmlobj->creators->creator->creatorName;
+      $node->field_doi_title['und'][0][value] = $xmlobj->titles->title;
+      $node->field_doi_publisher['und'][0][value] = $xmlobj->publisher;
+      $node->field_doi_description['und'][0][value] = $xmlobj->descriptions->description;
+
 
       // For loop to add all contributors to the contributors field
       $contributors_field = '';
       foreach($xmlobj->contributors->contributor as $contributor) {
           $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
       }
-      $node->field_doi_contributors[und][0][value] = $contributors_field;
 
-      $node->field_doi_dates[und][0][value] = $xmlobj->dates->date;
-      $node->field_doi_rights[und][0][value] = $xmlobj->rightsList->rights;
-      $node->field_doi_location[und][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
+      $node->field_doi_contributors['und'][0][value] = $contributors_field;
+
+      $node->field_doi_dates['und'][0][value] = $xmlobj->dates->date;
+      $node->field_doi_rights['und'][0][value] = $xmlobj->rightsList->rights;
+      $node->field_doi_location['und'][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
    
-      $citation = _doi_display_get_full_citation_from_doi($node->field_doi_identifier[und][0][value]);
+      $citation = _doi_display_get_full_citation_from_doi($node->field_doi_identifier['und'][0][value]);
 
       // Output text from module to be displayed in the block
-      $output = ("When referencing the " . $node->field_doi_title[und][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier[und][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
+      $output = ("When referencing the " . $node->field_doi_title['und'][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier['und'][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
 
       // Add additional First Use paper info if publication is linked
-      if($node->field_first_use_paper[und][0][target_id] != NULL){
+      if($node->field_first_use_paper['und'][0]['target_id'] != NULL){
           $additional = "Additionally, please cite the First Use paper associated with this Facility/Instrument: <List contents of first_use_paper field here>";
-          $fup_nid = $node->field_first_use_paper[und][0][target_id];
+          $fup_nid = $node->field_first_use_paper['und'][0]['target_id'];
           $fup_node = node_load($fup_nid);
-          $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation[und][0][value] . "</blockquote>");
+          $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation['und'][0][value] . "</blockquote>");
+
       }
 
       // Save metadata to DOI content fields    
