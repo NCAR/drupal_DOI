@@ -95,12 +95,6 @@ function doi_display_node_type_insert($content_type) {
 /**
  * Implements hook_form().
  *
- * Drupal needs for us to provide a form that lets the user
- * add content. This is the form that the user will see if
- * they go to node/add/node-example.
- *
- * You can get fancy with this form, or you can just punt
- * and return the default form that node_content will provide.
  */
 function doi_display_form($node, $form_state) {
   return node_content_form($node, $form_state);
