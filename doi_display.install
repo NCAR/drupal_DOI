@@ -105,28 +105,28 @@ function doi_display_form($node, $form_state) {
  *
  * This callback comes from hook_menu().
  */
-function doi_display_page() {
-  // We'll start building a renderable array that will be our page.
-  // For now we just declare the array.
-  $renderable_array = array();
-  // We query the database and find all of the nodes for the type we defined.
-  $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
-  $result = db_query($sql,
-    array(
-      ':type' => 'doi_display',
-      ':status' => 1,
-    )
-  );
-  $renderable_array['explanation'] = array(
-    '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
-  );
-
-  foreach ($result as $row) {
-    $node = node_load($row->nid);
-    $renderable_array['node_list'][] = node_view($node, 'example_node_list');
-  }
-  return $renderable_array;
-}
+// function doi_display_page() {
+//   // We'll start building a renderable array that will be our page.
+//   // For now we just declare the array.
+//   $renderable_array = array();
+//   // We query the database and find all of the nodes for the type we defined.
+//   $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
+//   $result = db_query($sql,
+//     array(
+//       ':type' => 'doi_display',
+//       ':status' => 1,
+//     )
+//   );
+//   $renderable_array['explanation'] = array(
+//     '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
+//   );
+// 
+//   foreach ($result as $row) {
+//     $node = node_load($row->nid);
+//     $renderable_array['node_list'][] = node_view($node, 'example_node_list');
+//   }
+//   return $renderable_array;
+// }
 
 
 /**
