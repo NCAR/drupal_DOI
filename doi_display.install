@@ -192,12 +192,6 @@ function _doi_display_installed_instances() {
 				'target_bundles' => array('publication')
 			),
 		),
-		// 'display' => array(
-		// 	'default' => array(
-		// 	'label' => 'hidden',
-		// 	'type' => 'hidden',
-		// 	),
-		// ),
 	),
     
     'field_doi_identifier' => array(
