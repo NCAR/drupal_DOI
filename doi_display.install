@@ -4,17 +4,8 @@
 
 
 /**
- * @file
- * Module file for Node Example module.
- *
- * Part of the Examples for Developers project.
- */
-
-/**
  * Implements hook_menu().
  *
- * We are providing a default page to illustrate the use of our custom node view
- * mode that will live at http://example.com/?q=examples/doi_display
  */
 function doi_display_menu() {
   $items['examples/doi_display'] = array(
@@ -28,7 +19,6 @@ function doi_display_menu() {
 /**
  * Implements hook_node_info().
  *
- * We use hook_node_info() to define our node content type.
  */
 function doi_display_node_info() {
   // We define the node type as an associative array.
@@ -388,10 +378,6 @@ function _doi_display_installed_instances() {
     
     ),
     
-    
-
-
-
     'field_doi_identifier' => array(
       'field_name'  => 'field_doi_identifier',
       'label' => t('Identifier'),
