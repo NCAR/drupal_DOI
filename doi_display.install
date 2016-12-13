@@ -361,17 +361,6 @@ function _doi_display_installed_fields() {
 /**
  * Define the field instances for our content type.
  *
- * The instance lets Drupal know which widget to use to allow the user to enter
- * data and how to react in different view modes.  We are going to display a
- * page that uses a custom "doi_display_list" view mode.  We will set a
- * cardinality of three allowing our content type to give the user three color
- * fields.
- *
- * This big array is factored into this function for readability.
- *
- * @return array
- *   An associative array specifying the instances we wish to add to our new
- *   node type.
  */
 function _doi_display_installed_instances() {
   return array(
