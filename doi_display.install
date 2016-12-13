@@ -24,7 +24,7 @@ function doi_display_node_info() {
   return array(
     'doi_display' => array(
       'name' => t('DOI'),
-      'base' => 'doi_display',
+      'base' => 'node_content',
       'description' => t(''),
       'title_label' => t('Digital Object Identifier'),
       'locked' => TRUE,
