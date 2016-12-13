@@ -118,13 +118,23 @@ function _doi_display_get_xmlobj($doi) {
 // The subroutine that creates the actual display
 function doi_display_get_content() {
     // NOTE: This requires the existence of a DOI content type with the 
-    // following variables: title, field_first_use_paper, field_doi_identifier, 
-    // field_doi_creator,field_doi_title, field_doi_publisher, 
-    // field_doi_description, field_doi_contributors, field_doi_dates, 
-    // field_doi_rights, field_doi_location, and a page content type containing 
-    // an entity reference field_doi_reference to the DOI.
-    // Look into packaging this as a feature module so everything will be 
-    // together.
+    // following variables: 
+	// THESE FIELDS ARE NOW AUTOMATICALL CREATED
+	//   title
+	//   field_first_use_paper
+	//   field_doi_identifier
+	//   field_doi_creator
+	//   field_doi_title
+	//   field_doi_publisher
+    //   field_doi_description
+	//   field_doi_contributors
+	//   field_doi_dates
+    //   field_doi_rights
+	//   field_doi_location
+	// 
+	// Content type referencing the DOI must have an Entity Reference field named
+	//   field_doi_reference
+	// This DOI refernec field must be manually created
     
     if(arg(0) == 'node' && is_numeric(arg(1))) {
         // Grab node id of current node

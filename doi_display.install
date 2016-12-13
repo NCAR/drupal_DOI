@@ -7,14 +7,14 @@
  * Implements hook_menu().
  *
  */
-function doi_display_menu() {
-  $items['examples/doi_display'] = array(
-    'page callback' => 'doi_display_page',
-    'access arguments' => array('access content'),
-    'title' => 'Node Example',
-  );
-  return $items;
-}
+// function doi_display_menu() {
+//   $items['examples/doi_display'] = array(
+//     'page callback' => 'doi_display_page',
+//     'access arguments' => array('access content'),
+//     'title' => 'Node Example',
+//   );
+//   return $items;
+// }
 
 /**
  * Implements hook_node_info().
@@ -132,57 +132,57 @@ function doi_display_form($node, $form_state) {
 /**
  * Implements hook_entity_info_alter().
  */
-function doi_display_entity_info_alter(&$entity_info) {
-  // Add our new view mode to the list of view modes...
-  $entity_info['node']['view modes']['example_node_list'] = array(
-    'label' => t('Example Node List'),
-    'custom settings' => TRUE,
-  );
-}
+// function doi_display_entity_info_alter(&$entity_info) {
+//   // Add our new view mode to the list of view modes...
+//   $entity_info['node']['view modes']['example_node_list'] = array(
+//     'label' => t('Example Node List'),
+//     'custom settings' => TRUE,
+//   );
+// }
 
 
 /**
  * Implements hook_field_formatter_info().
  */
-function doi_display_field_formatter_info() {
-  return array(
-    'doi_display_colors' => array(
-      'label' => t('Node Example Color Handle'),
-      'field types' => array('text'),
-    ),
-  );
-}
+// function doi_display_field_formatter_info() {
+//   return array(
+//     'doi_display_colors' => array(
+//       'label' => t('Node Example Color Handle'),
+//       'field types' => array('text'),
+//     ),
+//   );
+// }
 
 /**
  * Implements hook_field_formatter_view().
  */
-function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
-  $element = array();
-  switch ($display['type']) {
-    case 'doi_display_colors':
-      foreach ($items as $delta => $item) {
-        $element[$delta]['#type'] = 'markup';
-        $color = $item['safe_value'];
-        $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
-      }
-      break;
-  }
-
-  return $element;
-}
+// function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
+//   $element = array();
+//   switch ($display['type']) {
+//     case 'doi_display_colors':
+//       foreach ($items as $delta => $item) {
+//         $element[$delta]['#type'] = 'markup';
+//         $color = $item['safe_value'];
+//         $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
+//       }
+//       break;
+//   }
+// 
+//   return $element;
+// }
 
 /**
  * Implements hook_theme().
  *
  * This lets us tell Drupal about our theme functions and their arguments.
  */
-function doi_display_theme($existing, $type, $theme, $path) {
-  return array(
-    'example_node_color' => array(
-      'variables' => array('color' => NULL),
-    ),
-  );
-}
+// function doi_display_theme($existing, $type, $theme, $path) {
+//   return array(
+//     'example_node_color' => array(
+//       'variables' => array('color' => NULL),
+//     ),
+//   );
+// }
 
 /**
  * Implements hook_help().
@@ -203,10 +203,10 @@ function doi_display_theme($existing, $type, $theme, $path) {
  * can override this presentation if they wish.  This is a simplifed theme
  * function purely for illustrative purposes.
  */
-function theme_example_node_color($variables) {
-  $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
-  return $output;
-}
+// function theme_example_node_color($variables) {
+//   $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
+//   return $output;
+// }
 
 /**
  * Define the fields for our content type.
