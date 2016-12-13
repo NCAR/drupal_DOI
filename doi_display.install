@@ -154,9 +154,6 @@ function doi_display_field_formatter_info() {
 
 /**
  * Implements hook_field_formatter_view().
- *
- * @todo: We need to provide a formatter for the colors that a user is allowed
- * to enter during node creation.
  */
 function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
   $element = array();
