@@ -8,22 +8,6 @@
 // function _doi_display_get_xmlobj($doi) {
 
 
-/**
- * Implements hook_node_info()
- */
-// function doi_display_node_info() {
-//     return array(
-//         'product' => array(
-//             'name' => t('DOI'),
-//             'base' => 'doi',
-//             'description' => t('You can define new DOIs here'),
-//             'has_title' => TRUE,
-//             'title_label' => t('DOI')
-//          )
-//     );
-// }
-
-
 
 // Define the block that displays the module
 function doi_display_block_info() {
