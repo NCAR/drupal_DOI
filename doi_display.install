@@ -2,20 +2,6 @@
 // Install / remove the doi content type during module installation / removal
 
 
-
-/**
- * Implements hook_menu().
- *
- */
-// function doi_display_menu() {
-//   $items['examples/doi_display'] = array(
-//     'page callback' => 'doi_display_page',
-//     'access arguments' => array('access content'),
-//     'title' => 'Node Example',
-//   );
-//   return $items;
-// }
-
 /**
  * Implements hook_node_info().
  *
@@ -101,112 +87,6 @@ function doi_display_form($node, $form_state) {
   return node_content_form($node, $form_state);
 }
 
-/**
- *
- * This callback comes from hook_menu().
- */
-// function doi_display_page() {
-//   // We'll start building a renderable array that will be our page.
-//   // For now we just declare the array.
-//   $renderable_array = array();
-//   // We query the database and find all of the nodes for the type we defined.
-//   $sql = 'SELECT nid FROM {node} n WHERE n.type = :type AND n.status = :status';
-//   $result = db_query($sql,
-//     array(
-//       ':type' => 'doi_display',
-//       ':status' => 1,
-//     )
-//   );
-//   $renderable_array['explanation'] = array(
-//     '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
-//   );
-// 
-//   foreach ($result as $row) {
-//     $node = node_load($row->nid);
-//     $renderable_array['node_list'][] = node_view($node, 'example_node_list');
-//   }
-//   return $renderable_array;
-// }
-
-
-/**
- * Implements hook_entity_info_alter().
- */
-// function doi_display_entity_info_alter(&$entity_info) {
-//   // Add our new view mode to the list of view modes...
-//   $entity_info['node']['view modes']['example_node_list'] = array(
-//     'label' => t('Example Node List'),
-//     'custom settings' => TRUE,
-//   );
-// }
-
-
-/**
- * Implements hook_field_formatter_info().
- */
-// function doi_display_field_formatter_info() {
-//   return array(
-//     'doi_display_colors' => array(
-//       'label' => t('Node Example Color Handle'),
-//       'field types' => array('text'),
-//     ),
-//   );
-// }
-
-/**
- * Implements hook_field_formatter_view().
- */
-// function doi_display_field_formatter_view($object_type, $object, $field, $instance, $langcode, $items, $display) {
-//   $element = array();
-//   switch ($display['type']) {
-//     case 'doi_display_colors':
-//       foreach ($items as $delta => $item) {
-//         $element[$delta]['#type'] = 'markup';
-//         $color = $item['safe_value'];
-//         $element[$delta]['#markup'] = theme('example_node_color', array('color' => $color));
-//       }
-//       break;
-//   }
-// 
-//   return $element;
-// }
-
-/**
- * Implements hook_theme().
- *
- * This lets us tell Drupal about our theme functions and their arguments.
- */
-// function doi_display_theme($existing, $type, $theme, $path) {
-//   return array(
-//     'example_node_color' => array(
-//       'variables' => array('color' => NULL),
-//     ),
-//   );
-// }
-
-/**
- * Implements hook_help().
- */
-// function doi_display_help($path, $arg) {
-//   switch ($path) {
-//     case 'examples/doi_display':
-//       return "<p>" . t("The Node Example module provides a custom node type.
-//         You can create new Example Node nodes using the <a href='!nodeadd'>node add form</a>.",
-//         array('!nodeadd' => url('node/add/node-example'))) . "</p>";
-//   }
-// }
-
-/**
- * A custom theme function.
- *
- * By using this function to format our node-specific information, themes
- * can override this presentation if they wish.  This is a simplifed theme
- * function purely for illustrative purposes.
- */
-// function theme_example_node_color($variables) {
-//   $output = '<span style="background-color: #ccc; padding: 1em; margin-bottom: 1em; float: left; color: ' . $variables['color'] . '">' . $variables['color'] . '</span>';
-//   return $output;
-// }
 
 /**
  * Define the fields for our content type.
