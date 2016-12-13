@@ -21,19 +21,12 @@ function doi_display_menu() {
  *
  */
 function doi_display_node_info() {
-  // We define the node type as an associative array.
   return array(
     'doi_display' => array(
       'name' => t('DOI'),
-      // 'base' tells Drupal the base string for hook functions.
-      // This is often the module name; if base is set to 'mymodule',
-      // Drupal would call mymodule_insert() or similar for node
-      // hooks. In our case, the base is 'doi_display'.
       'base' => 'doi_display',
       'description' => t(''),
       'title_label' => t('Digital Object Identifier'),
-      // We'll set the 'locked' attribute to TRUE, so users won't be
-      // able to change the machine name of our content type.
       'locked' => TRUE,
     ),
   );
@@ -42,35 +35,9 @@ function doi_display_node_info() {
 /**
  * Implements hook_node_type_insert().
  *
- * Much like hook_node_insert() lets us know that a node is being
- * inserted into the database, hook_node_type_insert() lets us know
- * that a new content type has been inserted.
- *
- * Since Drupal will at some point insert our new content type,
- * this gives us a chance to add the fields we want.
- *
- * It is called for all inserts to the content type database, so
- * we have to make sure we're only modifying the type we're
- * concerned with.
  */
 function doi_display_node_type_insert($content_type) {
   if ($content_type->type == 'doi_display') {
-    // First we add the body field. Node API helpfully gives us
-    // node_add_body_field().
-    // We'll set the body label now, although we could also set
-    // it along with our other instance properties later.
-    // $body_instance = node_add_body_field($content_type, t('Example Description'));
-
-    // Add our example_node_list view mode to the body instance
-    // display by instructing the body to display as a summary.
-    // $body_instance['display']['example_node_list'] = array(
-    //   'label' => 'hidden',
-    //   'type' => 'text_summary_or_trimmed',
-    // );
-
-    // Save our changes to the body field instance.
-    // field_update_instance($body_instance);
-
     // Create all the fields we are adding to our content type.
     foreach (_doi_display_installed_fields() as $field) {
       field_create_field($field);
@@ -83,10 +50,7 @@ function doi_display_node_type_insert($content_type) {
       field_create_instance($instance);
     }
 
-    // node_types_rebuild();
-
 	// Create the group
-
 	$group_name = 'group_no_edit';
 	$entity_type = 'node';
 	$bundle = 'doi_display';
