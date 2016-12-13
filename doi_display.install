@@ -119,10 +119,7 @@ function doi_display_page() {
   $renderable_array['explanation'] = array(
     '#markup' => t("Node Example nodes you've created will be displayed here. Note that the color fields will be displayed differently in this list, than if you view the node normally. Click on the node title to see the difference. This is a result of using our 'example_node_list' node view type."),
   );
-  // Loop through each of our doi_display nodes and instruct node_view
-  // to use our "example_node_list" view.
-  // http://api.drupal.org/api/function/node_load/7
-  // http://api.drupal.org/api/function/node_view/7
+
   foreach ($result as $row) {
     $node = node_load($row->nid);
     $renderable_array['node_list'][] = node_view($node, 'example_node_list');
