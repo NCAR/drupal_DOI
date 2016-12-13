@@ -127,11 +127,9 @@ function doi_display_page() {
   return $renderable_array;
 }
 
+
 /**
  * Implements hook_entity_info_alter().
- *
- * We need to modify the default node entity info by adding a new view mode to
- * be used in functions like node_view() or node_build_content().
  */
 function doi_display_entity_info_alter(&$entity_info) {
   // Add our new view mode to the list of view modes...
