@@ -562,11 +562,6 @@ function _doi_display_installed_instances() {
 }
 
 
-
-
-
-
-
 /**
  * Implements hook_uninstall().
  */
@@ -587,15 +582,11 @@ function doi_display_uninstall() {
 
     foreach (_doi_display_installed_fields() as $field) {
       field_delete_field($field['field_name']);
-// print "\n\nTEST\n\n";
-// var_dump();
-		dsm($fields);
     }
 
 	// DOES need to be run twice
 	field_purge_batch(1000); 
 	field_purge_batch(1000); 
-
 }
 
 
