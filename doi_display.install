@@ -354,24 +354,7 @@ function _doi_display_installed_fields() {
       'type'        => 'text_long',
     ),
 
-    // 'doi_display_color' => array(
-    //   'field_name' => 'doi_display_color',
-    //   'cardinality' => 3,
-    //   'type'        => 'text',
-    //   'settings'    => array(
-    //     'max_length' => 60,
-    //   ),
-    // ),
-    // 'doi_display_quantity' => array(
-    //   'field_name'  => 'doi_display_quantity',
-    //   'cardinality' => 1,
-    //   'type'        => 'text',
-    // ),
-    // 'doi_display_image' => array(
-    //   'field_name' => 'doi_display_image',
-    //   'type'       => 'image',
-    //   'cardinality' => 1,
-    // ),
+
   );
 }
 
