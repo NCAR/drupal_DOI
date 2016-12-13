@@ -557,48 +557,7 @@ function _doi_display_installed_instances() {
       ),
     ),
 
-    // 'doi_display_color' => array(
-    //   'field_name' => 'doi_display_color',
-    //   'label'       => t('The colors available for this object.'),
-    //   'widget'      => array(
-    //     'type'    => 'text_textfield',
-    //   ),
-    //   'display' => array(
-    //     'example_node_list' => array(
-    //       'label' => 'hidden',
-    //       'type' => 'doi_display_colors',
-    //     ),
-    //   ),
-    // ),
-    // 'doi_display_quantity' => array(
-    //   'field_name'  => 'doi_display_quantity',
-    //   'label' => t('Quantity required'),
-    //   'type'        => 'text',
-    //   'widget'      => array(
-    //     'type'    => 'text_textfield',
-    //   ),
-    //   'display' => array(
-    //     'example_node_list' => array(
-    //       'label' => 'hidden',
-    //       'type' => 'hidden',
-    //     ),
-    //   ),
-    // ),
-    // 'doi_display_image' => array(
-    //   'field_name'  => 'doi_display_image',
-    //   'label'       => t('Upload an image:'),
-    //   'required'    => FALSE,
-    //   'widget' => array(
-    //     'type'    => 'image_image',
-    //     'weight'  => 2.10,
-    //   ),
-    //   'display' => array(
-    //     'example_node_list' => array(
-    //       'label' => 'hidden',
-    //       'type' => 'image_link_content__thumbnail',
-    //     ),
-    //   ),
-    // ),
+
   );
 }
 
