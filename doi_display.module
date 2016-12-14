@@ -115,6 +115,27 @@ function _doi_display_get_xmlobj($doi) {
 }
 
 
+
+function _get_referenced_doi_node($nid) {
+
+	$query = Database::getConnection()
+		->select('field_data_field_doi_reference', 'dr')
+		->fields('dr', array('entity_id'));
+	$query->condition('dr.field_doi_reference_target_id', $nid);	
+
+	$nids = $query->execute()->fetchAll();		
+
+	$doi_nids = array();
+
+	foreach ($nids AS $nid) {
+		array_push($doi_nids, $nid->entity_id);
+	}
+
+	$doi_node  = node_load($doi_nids[0]);
+
+	return($doi_node);	
+}
+
 // The subroutine that creates the actual display
 function doi_display_get_content() {
     // NOTE: This requires the existence of a DOI content type with the 
@@ -134,7 +155,7 @@ function doi_display_get_content() {
 	// 
 	// Content type referencing the DOI must have an Entity Reference field named
 	//   field_doi_reference
-	// This DOI refernec field must be manually created
+
     
     if(arg(0) == 'node' && is_numeric(arg(1))) {
         // Grab node id of current node
@@ -142,65 +163,76 @@ function doi_display_get_content() {
        
         // Load current node to grab fields
         $current_node = node_load($current_nid);
+
+		$doi_node = _get_referenced_doi_node($current_nid);
     }
 
     // Check if field_doi_reference exists and is set
-    if (!isset($current_node->field_doi_reference['und'][0]['target_id'])) {
+    if (!isset($doi_node->field_doi_reference['und'][0]['target_id'])) {
       return;
-    }
 
-    // DOI reference is set 
-    else {
-
-      // Get node id of content type containing the doi
-      $nid = $current_node->field_doi_reference['und'][0]['target_id'];
-      $node = node_load($nid); 
-      
-      // Grab the value in the title of the doi content type which contains the doi
-      // Note that JSON doesn't return all the metadata we want so use the XML 
-      // query
-      // Q. Should the title be used to store the DOI, rather than a defined field?
-      $doi = $node->title;
-      $xmlobj = _doi_display_get_xmlobj($doi);
-   
-      // Create variables for each of the metadata items
-      $node->field_doi_identifier['und'][0][value] = $xmlobj->identifier;
-      $node->field_doi_creator['und'][0][value] = $xmlobj->creators->creator->creatorName;
-      $node->field_doi_title['und'][0][value] = $xmlobj->titles->title;
-      $node->field_doi_publisher['und'][0][value] = $xmlobj->publisher;
-      $node->field_doi_description['und'][0][value] = $xmlobj->descriptions->description;
+ 	// DOI reference is set 
+    } else {
+      // dsm($doi_node);
 
 
-      // For loop to add all contributors to the contributors field
-      $contributors_field = '';
-      foreach($xmlobj->contributors->contributor as $contributor) {
-          $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
-      }
+      $doi_node = _update_doi_node_contents($doi_node);
 
-      $node->field_doi_contributors['und'][0][value] = $contributors_field;
 
-      $node->field_doi_dates['und'][0][value] = $xmlobj->dates->date;
-      $node->field_doi_rights['und'][0][value] = $xmlobj->rightsList->rights;
-      $node->field_doi_location['und'][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
-   
-      $citation = _doi_display_get_full_citation_from_doi($node->field_doi_identifier['und'][0][value]);
+      $citation = _doi_display_get_full_citation_from_doi($doi_node->field_doi_identifier['und'][0][value]);
 
       // Output text from module to be displayed in the block
-      $output = ("When referencing the " . $node->field_doi_title['und'][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $node->field_doi_identifier['und'][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
+      $output = ("When referencing the " . $doi_node->field_doi_title['und'][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $doi_node->field_doi_identifier['und'][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
 
       // Add additional First Use paper info if publication is linked
-      if($node->field_first_use_paper['und'][0]['target_id'] != NULL){
+      if($doi_node->field_first_use_paper['und'][0]['target_id'] != NULL){
           $additional = "Additionally, please cite the First Use paper associated with this Facility/Instrument: <List contents of first_use_paper field here>";
-          $fup_nid = $node->field_first_use_paper['und'][0]['target_id'];
+          $fup_nid = $doi_node->field_first_use_paper['und'][0]['target_id'];
           $fup_node = node_load($fup_nid);
           $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation['und'][0][value] . "</blockquote>");
-
       }
 
-      // Save metadata to DOI content fields    
-      node_save($node);
 
       return $output;
 
     } // endif field_doi_reference exists
+}
+
+
+function _update_doi_node_contents($doi_node) {
+    // Grab the value in the title of the doi content type which contains the doi
+    // Note that JSON doesn't return all the metadata we want so use the XML 
+    // query
+    // Q. Should the title be used to store the DOI, rather than a defined field?
+
+
+    $doi = $node->title;
+    $xmlobj = _doi_display_get_xmlobj($doi);
+ 
+    // Create variables for each of the metadata items
+    $doi_node->field_doi_identifier['und'][0][value] = $xmlobj->identifier;
+    $doi_node->field_doi_creator['und'][0][value] = $xmlobj->creators->creator->creatorName;
+    $doi_node->field_doi_title['und'][0][value] = $xmlobj->titles->title;
+    $doi_node->field_doi_publisher['und'][0][value] = $xmlobj->publisher;
+    $doi_node->field_doi_description['und'][0][value] = $xmlobj->descriptions->description;
+
+    // For loop to add all contributors to the contributors field
+    $contributors_field = '';
+
+    foreach($xmlobj->contributors->contributor as $contributor) {
+        $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
+    }
+
+    $doi_node->field_doi_contributors['und'][0][value] = $contributors_field;
+
+    $doi_node->field_doi_dates['und'][0][value] = $xmlobj->dates->date;
+    $doi_node->field_doi_rights['und'][0][value] = $xmlobj->rightsList->rights;
+    $doi_node->field_doi_location['und'][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
+
+    // Save metadata to DOI content fields    
+    node_save($doi_node);
+
+	$doi_node = node_load($doi_node->nid);
+
+	return($doi_node);
 }
