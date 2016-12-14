@@ -82,6 +82,8 @@ function doi_display_node_type_insert($content_type) {
   }
 }
 
+
+
 /**
  * Implements hook_form().
  *
@@ -106,10 +108,7 @@ function doi_display_uninstall() {
     node_delete_multiple($nodeids);
     node_type_delete($ournewtype);
 
-    // $ournewtype = 'doi-display';
-    // node_type_delete($ournewtype);
-
-
+	// Delete the fields attached to the content type
     foreach (_doi_display_installed_fields() as $field) {
       field_delete_field($field['field_name']);
     }
