@@ -60,7 +60,9 @@ function doi_display_node_type_insert($content_type) {
         'field_doi_contributors',
         'field_doi_dates',
         'field_doi_rights',
+        'field_doi_full_citation',
         'field_doi_location',
+
       ),
       'format_type' => 'fieldset',
       'format_settings' => array(
@@ -174,6 +176,12 @@ function _doi_display_installed_fields() {
   
     'field_doi_rights' => array(
       'field_name'  => 'field_doi_rights',
+      'cardinality' => 1,
+      'type'        => 'text_long',
+    ),
+
+    'field_doi_full_citation' => array(
+      'field_name'  => 'field_doi_full_citation',
       'cardinality' => 1,
       'type'        => 'text_long',
     ),
@@ -344,6 +352,21 @@ function _doi_display_installed_instances() {
     
     'field_doi_rights' => array(
       'field_name'  => 'field_doi_rights',
+      'label' => t('Rights'),
+      'type'        => 'text_long',
+      'widget'      => array(
+        'type'    => 'text_textarea',
+      ),
+      'display' => array(
+        'default' => array(
+          'label' => 'hidden',
+          'type' => 'hidden',
+        ),
+      ),
+    ),
+
+    'field_doi_full_citation' => array(
+      'field_name'  => 'field_doi_full_citation',
       'label' => t('Rights'),
       'type'        => 'text_long',
       'widget'      => array(
