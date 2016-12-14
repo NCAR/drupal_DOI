@@ -202,34 +202,36 @@ function _update_doi_node_contents($doi_node) {
     // Grab the value in the title of the doi content type which contains the doi
     // Note that JSON doesn't return all the metadata we want so use the XML 
     // query
-    // Q. Should the title be used to store the DOI, rather than a defined field?
-
 
     $doi = $doi_node->title;
     $xmlobj = _doi_display_get_xmlobj($doi);
- 
-    // Create variables for each of the metadata items
-    $doi_node->field_doi_identifier['und'][0][value] = $xmlobj->identifier;
-    $doi_node->field_doi_creator['und'][0][value] = $xmlobj->creators->creator->creatorName;
-    $doi_node->field_doi_title['und'][0][value] = $xmlobj->titles->title;
-    $doi_node->field_doi_publisher['und'][0][value] = $xmlobj->publisher;
-    $doi_node->field_doi_description['und'][0][value] = $xmlobj->descriptions->description;
 
-    // For loop to add all contributors to the contributors field
-    $contributors_field = '';
+	$doi_node = null;
+	
+	if (! $xmlobj) {
+		drupal_set_message('Unable to retrieve DOI metadata. Please check to make sure the DOI is formatted properly.', 'error');
+	} else {
+	    // Create variables for each of the metadata items
+	    $doi_node->field_doi_identifier['und'][0][value] = $xmlobj->identifier;
+	    $doi_node->field_doi_creator['und'][0][value] = $xmlobj->creators->creator->creatorName;
+	    $doi_node->field_doi_title['und'][0][value] = $xmlobj->titles->title;
+	    $doi_node->field_doi_publisher['und'][0][value] = $xmlobj->publisher;
+	    $doi_node->field_doi_description['und'][0][value] = $xmlobj->descriptions->description;
 
-    foreach($xmlobj->contributors->contributor as $contributor) {
-        $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
-    }
+	    // For loop to add all contributors to the contributors field
+	    $contributors_field = '';
 
-    $doi_node->field_doi_contributors['und'][0][value] = $contributors_field;
+	    foreach($xmlobj->contributors->contributor as $contributor) {
+	        $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
+	    }
 
-    $doi_node->field_doi_dates['und'][0][value] = $xmlobj->dates->date;
-    $doi_node->field_doi_rights['und'][0][value] = $xmlobj->rightsList->rights;
-    $doi_node->field_doi_location['und'][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
-    $doi_node->field_doi_full_citation['und'][0][value] = _doi_display_get_full_citation_from_doi($doi_node->field_doi_identifier['und'][0][value]);
+	    $doi_node->field_doi_contributors['und'][0][value] = $contributors_field;
 
-    // Save metadata to DOI content fields    
+	    $doi_node->field_doi_dates['und'][0][value] = $xmlobj->dates->date;
+	    $doi_node->field_doi_rights['und'][0][value] = $xmlobj->rightsList->rights;
+	    $doi_node->field_doi_location['und'][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
+	    $doi_node->field_doi_full_citation['und'][0][value] = _doi_display_get_full_citation_from_doi($doi_node->field_doi_identifier['und'][0][value]);
+	}
 
 	return($doi_node);
 }
