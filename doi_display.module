@@ -171,7 +171,6 @@ function doi_display_get_content() {
  	// DOI reference is set 
 
     if (isset($doi_node->field_doi_reference['und'][0]['target_id'])) {
-      $doi_node = _update_doi_node_contents($doi_node);
 
       $citation = $doi_node->field_doi_full_citation['und'][0][value];
 
@@ -225,9 +224,16 @@ function _update_doi_node_contents($doi_node) {
     $doi_node->field_doi_full_citation['und'][0][value] = _doi_display_get_full_citation_from_doi($doi_node->field_doi_identifier['und'][0][value]);
 
     // Save metadata to DOI content fields    
-    node_save($doi_node);
-
-	$doi_node = node_load($doi_node->nid);
 
 	return($doi_node);
+}
+
+/*
+*  Implements hook_node_presave
+* Before insterting or updating the DOI, retrieve the current state of the DOI metedate from crosscite
+*/
+function doi_display_node_presave($node) {
+	if ($node->type == 'doi_display') {
+		$node = _update_doi_node_contents($node);		
+	}
 }
