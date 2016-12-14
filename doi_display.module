@@ -35,7 +35,7 @@ function doi_display_block_view($delta='') {
  */
 function doi_display_node_presave($node) {
 	if ($node->type == 'doi_display') {
-		$node = _update_doi_node_contents($node);		
+		$node = _update_doi_node_contents($node);
 	}
 }
 
@@ -112,6 +112,8 @@ function _doi_display_get_xmlobj($doi) {
     $url = "http://ezid.cdlib.org/manage/display_xml/";
     $full_url = $url . $doi;   
 
+
+
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $full_url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -164,7 +166,7 @@ function _doi_display_get_content() {
 	//   field_doi_dates
     //   field_doi_rights
 	//   field_doi_location
-	// 
+
 
     
     if(arg(0) == 'node' && is_numeric(arg(1))) {
@@ -205,8 +207,6 @@ function _update_doi_node_contents($doi_node) {
 
     $doi = $doi_node->title;
     $xmlobj = _doi_display_get_xmlobj($doi);
-
-	$doi_node = null;
 	
 	if (! $xmlobj) {
 		drupal_set_message('Unable to retrieve DOI metadata. Please check to make sure the DOI is formatted properly.', 'error');
