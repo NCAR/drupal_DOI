@@ -151,7 +151,7 @@ function _get_referenced_doi_node($nid) {
 function _doi_display_get_content() {
     // NOTE: This requires the existence of a DOI content type with the 
     // following variables: 
-	// ALL FIELDS ARE NOW AUTOMATICALL CREATED
+	// ALL FIELDS ARE NOW AUTOMATICALLY CREATED
 	//   title
 	//   field_first_use_paper
 	//   field_doi_reference
