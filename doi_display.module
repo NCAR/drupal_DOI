@@ -91,7 +91,7 @@ function _doi_display_get_full_citation_from_doi($doi) {
     $citation = _doi_display_query_datacite($doi,$accept);
 
     // Add access date to citation
-    $citation = $citation."Retrieved ".date("F j, Y");
+    $citation = $citation."Retrieved " . date("F j, Y");
 
     return($citation);
 }
@@ -140,9 +140,10 @@ function _get_referenced_doi_node($nid) {
 function doi_display_get_content() {
     // NOTE: This requires the existence of a DOI content type with the 
     // following variables: 
-	// THESE FIELDS ARE NOW AUTOMATICALL CREATED
+	// ALL FIELDS ARE NOW AUTOMATICALL CREATED
 	//   title
 	//   field_first_use_paper
+	//   field_doi_reference
 	//   field_doi_identifier
 	//   field_doi_creator
 	//   field_doi_title
@@ -153,8 +154,6 @@ function doi_display_get_content() {
     //   field_doi_rights
 	//   field_doi_location
 	// 
-	// Content type referencing the DOI must have an Entity Reference field named
-	//   field_doi_reference
 
     
     if(arg(0) == 'node' && is_numeric(arg(1))) {
@@ -167,9 +166,9 @@ function doi_display_get_content() {
 		$doi_node = _get_referenced_doi_node($current_nid);
     }
 
-    // Check if field_doi_reference exists and is set
- 	// DOI reference is set 
-
+	$output = null;
+	
+    // If a DOI exists for this page, display it
     if (isset($doi_node->field_doi_reference['und'][0]['target_id'])) {
 
       $citation = $doi_node->field_doi_full_citation['und'][0][value];
@@ -184,11 +183,9 @@ function doi_display_get_content() {
           $fup_node = node_load($fup_nid);
           $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation['und'][0][value] . "</blockquote>");
       }
-
-
-      return $output;
-
     } 
+
+    return $output;
 }
 
 
