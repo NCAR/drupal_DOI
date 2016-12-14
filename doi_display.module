@@ -160,9 +160,7 @@ function doi_display_get_content() {
         // Grab node id of current node
         $current_nid = arg(1);
        
-        // Load current node to grab fields
-        $current_node = node_load($current_nid);
-
+        // Load the DOI nodes referencing this page, if any
 		$doi_node = _get_referenced_doi_node($current_nid);
     }
 
