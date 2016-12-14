@@ -17,6 +17,8 @@ function doi_display_block_info() {
   return $blocks;
 }
 
+
+
 // Define what is displayed in the module
 function doi_display_block_view($delta='') {
   switch ($delta) {
@@ -28,6 +30,8 @@ function doi_display_block_view($delta='') {
       break;
   }
 }
+
+
 
 /*
  *  Implements hook_node_presave
@@ -92,6 +96,7 @@ function _doi_display_query_datacite($doi,$accept) {
 }
 
 
+
 // Pull the full citation from the doi.org website
 function _doi_display_get_full_citation_from_doi($doi) {
     // Set the citation style. There are many choices. Set your preference 
@@ -107,12 +112,12 @@ function _doi_display_get_full_citation_from_doi($doi) {
     return($citation);
 }
 
+
+
 function _doi_display_get_xmlobj($doi) {
     #Query EZID for the XML for this DOI
     $url = "http://ezid.cdlib.org/manage/display_xml/";
     $full_url = $url . $doi;   
-
-
 
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $full_url);
@@ -148,6 +153,8 @@ function _get_referenced_doi_node($nid) {
 
 	return($doi_node);	
 }
+
+
 
 // The subroutine that creates the actual display
 function _doi_display_get_content() {

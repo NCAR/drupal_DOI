@@ -19,6 +19,8 @@ function doi_display_node_info() {
   );
 }
 
+
+
 /**
  * Implements hook_node_type_insert().
  *
@@ -29,6 +31,7 @@ function doi_display_node_type_insert($content_type) {
     foreach (_doi_display_installed_fields() as $field) {
       field_create_field($field);
     }
+
 
     // Create all the instances for our fields.
     foreach (_doi_display_installed_instances() as $instance) {
