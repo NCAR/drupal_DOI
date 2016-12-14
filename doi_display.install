@@ -392,7 +392,7 @@ function _doi_display_installed_instances() {
 
     'field_doi_full_citation' => array(
       'field_name'  => 'field_doi_full_citation',
-      'label' => t('Rights'),
+      'label' => t('Full Citation'),
       'type'        => 'text_long',
       'widget'      => array(
         'type'    => 'text_textarea',
