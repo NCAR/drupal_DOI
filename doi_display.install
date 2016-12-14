@@ -2,6 +2,16 @@
 // Install / remove the doi content type during module installation / removal
 
 
+/*
+ *  Implements hook_node_presave
+ * Before insterting or updating the DOI, retrieve the current state of the DOI metedate from crosscite
+ */
+function doi_display_node_presave($node) {
+	if ($node->type == 'doi_display') {
+		$node = _update_doi_node_contents($node);		
+	}
+}
+
 /**
  * Implements hook_node_info().
  *
