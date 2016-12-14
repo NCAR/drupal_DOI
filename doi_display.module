@@ -168,13 +168,10 @@ function doi_display_get_content() {
     }
 
     // Check if field_doi_reference exists and is set
-    if (!isset($doi_node->field_doi_reference['und'][0]['target_id'])) {
-      return;
-
  	// DOI reference is set 
-    } else {
-      $doi_node = _update_doi_node_contents($doi_node);
 
+    if (isset($doi_node->field_doi_reference['und'][0]['target_id'])) {
+      $doi_node = _update_doi_node_contents($doi_node);
 
       $citation = $doi_node->field_doi_full_citation['und'][0][value];
 
@@ -192,7 +189,7 @@ function doi_display_get_content() {
 
       return $output;
 
-    } // endif field_doi_reference exists
+    } 
 }
 
 
@@ -203,7 +200,7 @@ function _update_doi_node_contents($doi_node) {
     // Q. Should the title be used to store the DOI, rather than a defined field?
 
 
-    $doi = $node->title;
+    $doi = $doi_node->title;
     $xmlobj = _doi_display_get_xmlobj($doi);
  
     // Create variables for each of the metadata items
