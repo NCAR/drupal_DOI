@@ -2,15 +2,6 @@
 // Install / remove the doi content type during module installation / removal
 
 
-/*
- *  Implements hook_node_presave
- * Before insterting or updating the DOI, retrieve the current state of the DOI metedate from crosscite
- */
-function doi_display_node_presave($node) {
-	if ($node->type == 'doi_display') {
-		$node = _update_doi_node_contents($node);		
-	}
-}
 
 /**
  * Implements hook_node_info().
@@ -100,6 +91,36 @@ function doi_display_form($node, $form_state) {
 }
 
 
+
+/**
+ * Implements hook_uninstall().
+ */
+function doi_display_uninstall() {
+    $ournewtype = 'doi_display';
+    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
+    $result = db_query($sql, array(':type' => $ournewtype));
+    $nodeids = array();
+    foreach ($result as $row) {
+        $nodeids[] = $row->nid;
+    }
+    node_delete_multiple($nodeids);
+    node_type_delete($ournewtype);
+
+    // $ournewtype = 'doi-display';
+    // node_type_delete($ournewtype);
+
+
+    foreach (_doi_display_installed_fields() as $field) {
+      field_delete_field($field['field_name']);
+    }
+
+	// DOES need to be run twice
+	field_purge_batch(1000); 
+	field_purge_batch(1000); 
+}
+
+
+
 /**
  * Define the fields for our content type.
  *
@@ -171,7 +192,6 @@ function _doi_display_installed_fields() {
       'type'        => 'text',
     ),
   
-  
     'field_doi_description' => array(
       'field_name'  => 'field_doi_description',
       'cardinality' => 1,
@@ -195,8 +215,6 @@ function _doi_display_installed_fields() {
       'cardinality' => 1,
       'type'        => 'text_long',
     ),
-
-
   );
 }
 
@@ -328,8 +346,6 @@ function _doi_display_installed_instances() {
       ),
     ),
     
-    
-    
     'field_doi_description' => array(
       'field_name'  => 'field_doi_description',
       'label' => t('Description'),
@@ -389,37 +405,5 @@ function _doi_display_installed_instances() {
         ),
       ),
     ),
-
-
   );
 }
-
-
-/**
- * Implements hook_uninstall().
- */
-function doi_display_uninstall() {
-    $ournewtype = 'doi_display';
-    $sql = 'SELECT nid FROM {node} n WHERE n.type = :type';
-    $result = db_query($sql, array(':type' => $ournewtype));
-    $nodeids = array();
-    foreach ($result as $row) {
-        $nodeids[] = $row->nid;
-    }
-    node_delete_multiple($nodeids);
-    node_type_delete($ournewtype);
-
-    $ournewtype = 'doi-display';
-    node_type_delete($ournewtype);
-
-
-    foreach (_doi_display_installed_fields() as $field) {
-      field_delete_field($field['field_name']);
-    }
-
-	// DOES need to be run twice
-	field_purge_batch(1000); 
-	field_purge_batch(1000); 
-}
-
-

@@ -21,13 +21,24 @@ function doi_display_block_info() {
 function doi_display_block_view($delta='') {
   switch ($delta) {
   case 'doi_display':
-      $doi = doi_display_get_content();
+      $doi = _doi_display_get_content();
       $block['subject'] = t("Citation");
       $block['content'] = $doi;
       return $block;
       break;
   }
 }
+
+/*
+ *  Implements hook_node_presave
+ * Before insterting or updating the DOI, retrieve the current state of the DOI metedate from crosscite
+ */
+function doi_display_node_presave($node) {
+	if ($node->type == 'doi_display') {
+		$node = _update_doi_node_contents($node);		
+	}
+}
+
 
 //Query datacite and return metadata for this DOI based on type given in accept 
 //command
@@ -137,7 +148,7 @@ function _get_referenced_doi_node($nid) {
 }
 
 // The subroutine that creates the actual display
-function doi_display_get_content() {
+function _doi_display_get_content() {
     // NOTE: This requires the existence of a DOI content type with the 
     // following variables: 
 	// ALL FIELDS ARE NOW AUTOMATICALL CREATED
@@ -223,12 +234,3 @@ function _update_doi_node_contents($doi_node) {
 	return($doi_node);
 }
 
-/*
-*  Implements hook_node_presave
-* Before insterting or updating the DOI, retrieve the current state of the DOI metedate from crosscite
-*/
-function doi_display_node_presave($node) {
-	if ($node->type == 'doi_display') {
-		$node = _update_doi_node_contents($node);		
-	}
-}
