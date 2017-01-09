@@ -149,7 +149,11 @@ function _get_referenced_doi_node($nid) {
 		array_push($doi_nids, $nid->entity_id);
 	}
 
-	$doi_node  = node_load($doi_nids[0]);
+	$doi_node = null;
+
+	if (isset($doi_nids[0]) && $doi_nids[0]) {
+		$doi_node  = node_load($doi_nids[0]);
+	}
 
 	return($doi_node);	
 }
