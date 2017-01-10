@@ -193,17 +193,17 @@ function _doi_display_get_content() {
     // If a DOI exists for this page, display it
     if (isset($doi_node->field_doi_reference['und'][0]['target_id'])) {
 
-      $citation = $doi_node->field_doi_full_citation['und'][0][value];
-
+      $citation = $doi_node->field_doi_full_citation['und'][0]['value'];
+dsm($doi_node->field_doi_identifier['und'][0]['value']);
       // Output text from module to be displayed in the block
-      $output = ("When referencing the " . $doi_node->field_doi_title['und'][0][value] . " in publications or proposals, please use the identifier <strong>" . $doi . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $doi_node->field_doi_identifier['und'][0][value] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
+      $output = ("When referencing the " . $doi_node->field_doi_title['und'][0]['value'] . " in publications or proposals, please use the identifier <strong>" . $doi_node->field_doi_identifier['und'][0]['value'] . "</strong> -- for example as a citation:<br><blockquote> " . $citation . "</blockquote> Please be careful of linebreaks when cutting and pasting the above text, and feel free to reformat to fit your document. Additional citation styles are avilable at <a style='color:#297AC9' href='http://data.datacite.org/" . $doi_node->field_doi_identifier['und'][0]['value'] . "'>DataCite</a> or <a style='color:#297AC9' href='http://crosscite.org/citeproc/'>CrossCite</a>.<br><br>");
 
       // Add additional First Use paper info if publication is linked
-      if($doi_node->field_first_use_paper['und'][0]['target_id'] != NULL){
+      if(isset($doi_node->field_first_use_paper['und'][0]['target_id']) && $doi_node->field_first_use_paper['und'][0]['target_id'] != NULL){
           $additional = "Additionally, please cite the First Use paper associated with this Facility/Instrument: <List contents of first_use_paper field here>";
           $fup_nid = $doi_node->field_first_use_paper['und'][0]['target_id'];
           $fup_node = node_load($fup_nid);
-          $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation['und'][0][value] . "</blockquote>");
+          $output = ($output . $additional . "<blockquote>" . $fup_node->field_publication_full_citation['und'][0]['value'] . "</blockquote>");
       }
     } 
 
@@ -223,11 +223,11 @@ function _update_doi_node_contents($doi_node) {
 		drupal_set_message('Unable to retrieve DOI metadata. Please check to make sure the DOI is formatted properly.', 'error');
 	} else {
 	    // Create variables for each of the metadata items
-	    $doi_node->field_doi_identifier['und'][0][value] = $xmlobj->identifier;
-	    $doi_node->field_doi_creator['und'][0][value] = $xmlobj->creators->creator->creatorName;
-	    $doi_node->field_doi_title['und'][0][value] = $xmlobj->titles->title;
-	    $doi_node->field_doi_publisher['und'][0][value] = $xmlobj->publisher;
-	    $doi_node->field_doi_description['und'][0][value] = $xmlobj->descriptions->description;
+	    $doi_node->field_doi_identifier['und'][0]['value'] = $xmlobj->identifier;
+	    $doi_node->field_doi_creator['und'][0]['value'] = $xmlobj->creators->creator->creatorName;
+	    $doi_node->field_doi_title['und'][0]['value'] = $xmlobj->titles->title;
+	    $doi_node->field_doi_publisher['und'][0]['value'] = $xmlobj->publisher;
+	    $doi_node->field_doi_description['und'][0]['value'] = $xmlobj->descriptions->description;
 
 	    // For loop to add all contributors to the contributors field
 	    $contributors_field = '';
@@ -236,12 +236,12 @@ function _update_doi_node_contents($doi_node) {
 	        $contributors_field = $contributors_field . $contributor->attributes() . ": " . $contributor->contributorName . "\r\n";
 	    }
 
-	    $doi_node->field_doi_contributors['und'][0][value] = $contributors_field;
+	    $doi_node->field_doi_contributors['und'][0]['value'] = $contributors_field;
 
-	    $doi_node->field_doi_dates['und'][0][value] = $xmlobj->dates->date;
-	    $doi_node->field_doi_rights['und'][0][value] = $xmlobj->rightsList->rights;
-	    $doi_node->field_doi_location['und'][0][value] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
-	    $doi_node->field_doi_full_citation['und'][0][value] = _doi_display_get_full_citation_from_doi($doi_node->field_doi_identifier['und'][0][value]);
+	    $doi_node->field_doi_dates['und'][0]['value'] = $xmlobj->dates->date;
+	    $doi_node->field_doi_rights['und'][0]['value'] = $xmlobj->rightsList->rights;
+	    $doi_node->field_doi_location['und'][0]['value'] = $xmlobj->geoLocations->geoLocation->geoLocationPlace;
+	    $doi_node->field_doi_full_citation['und'][0]['value'] = _doi_display_get_full_citation_from_doi($doi_node->field_doi_identifier['und'][0]['value']);
 	}
 
 	return($doi_node);
