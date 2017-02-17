@@ -149,13 +149,7 @@ function _doi_display_installed_fields() {
 	'field_first_use_paper' => array(
 		'field_name'  => 'field_first_use_paper',
 		'cardinality' => 1,
-		'type'        => 'entityreference',
-		'settings' => array(
-			'target_type' => 'node',
-			'handler_settings' => array(
-				'target_bundles' => array('publication')
-			),
-		),
+		'type'        => 'text_long',
 	),
 
     'field_doi_identifier' => array(
@@ -246,16 +240,10 @@ function _doi_display_installed_instances() {
 	'field_first_use_paper' => array(
 		'field_name'  => 'field_first_use_paper',
 		'label' => t('First Use Paper'),
-		'type'        => 'text',
-		'widget'      => array(
-			'type'    => 'autocomplete',
-		),
-		'settings' => array(
-			'target_type' => 'node',
-			'handler_settings' => array(
-				'target_bundles' => array('publication')
-			),
-		),
+		'type'        => 'text_long',
+                'widget'      => array(
+                   'type'    => 'text_textarea',
+                ),
 	),
     
     'field_doi_identifier' => array(
